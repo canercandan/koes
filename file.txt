@@ -1,0 +1,8 @@
+A->true
+I->true
+A->B
+B->C
+B->D
+C&D->E
+F->true
+G->false
