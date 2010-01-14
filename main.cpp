@@ -1,8 +1,11 @@
-#include <boost/algorithm/string/split.hpp>
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <map>
+#include <string>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/split.hpp>
 
 #define		AND		"&"
 #define		OR		"|"
@@ -10,22 +13,17 @@
 #define		NOT		"!"
 #define		SEPERATOR	"->"
 
-typedef char	Fact;
+typedef std::string	Fact;
 
-enum Operator { AND, OR, XOR, NOT, SEPERATOR };
-
-union Data
-{
-  Fact		fact;
-  Operator	op;
-};
+enum Operator {FACT, AND, OR, XOR, NOT, SEPERATOR};
 
 //struct Entry;
 struct Entry
 {
-  Data	data;
-  Entry* left;
-  Entry* right;
+  Operator	op;
+  Fact		fact;
+  Entry*	left;
+  Entry*	right;
 };
 
 typedef std::vector< Entry > RulesSet;
@@ -49,13 +47,17 @@ static void fill_out(std::ifstream& f)
 
       if (conclusion == "true" || conclusion == "false")
 	{
-	  if (expression.size() == 1) // it means that we have only one fact to set
+	  std::vector<std::string>	v;
+	  boost::split(v, expression, boost::is_any_of("&|^"));
+
+	  if (v.size() == 1) // it means that we have only one fact to set
 	    {
-	      Fact fact = expression[0];
-	      facts[fact] = (conclusion == "true") ? true : false;
+	      facts[expression] = (conclusion == "true") ? true : false;
 	    }
 	  else // it means there are several facts to set A&B&C&D->true
 	    {
+	      for (int i = 0, size = v.size(); i < size; ++i)
+		facts[v[i]] = (conclusion == "true") ? true : false;
 	    }
 	}
     }
@@ -63,8 +65,11 @@ static void fill_out(std::ifstream& f)
 
 int	main(int ac, char** av)
 {
+  if (ac < 2)
+    throw std::runtime_error("no argument");
+
   std::ifstream f;
-  f.open("file.txt");
+  f.open(av[1]);
   fill_out(f);
   f.close();
 

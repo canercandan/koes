@@ -1,0 +1,8 @@
+cat->true
+dog->true
+A->B
+B->C
+B->D
+C&D->E
+tiger->true
+fly->false
