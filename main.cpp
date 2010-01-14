@@ -4,6 +4,12 @@
 #include <vector>
 #include <map>
 
+#define		AND		"&"
+#define		OR		"|"
+#define		XOR		"^"
+#define		NOT		"!"
+#define		SEPERATOR	"->"
+
 typedef char	Fact;
 
 enum Operator { AND, OR, XOR, NOT, SEPERATOR };
