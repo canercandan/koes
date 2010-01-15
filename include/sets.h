@@ -11,4 +11,6 @@ typedef Node	Rule;
 typedef std::vector< Rule* > RulesSet;
 typedef std::map< Fact, bool > FactsSet;
 
+typedef std::vector< std::string >	FileVector;
+
 #endif // !__SET_H__
