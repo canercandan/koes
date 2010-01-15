@@ -63,10 +63,13 @@ int	main(int ac, char** av)
   if (ac < 2)
     throw std::runtime_error("no argument");
 
-  std::ifstream f;
-  f.open(av[1]);
-  fill_out(f);
-  f.close();
+  for (int i = 1; i < ac; ++i)
+    {
+      std::ifstream f;
+      f.open(av[i]);
+      fill_out(f);
+      f.close();
+    }
 
   std::cout << "print out facts table:" << std::endl;
   for (FactsSet::iterator it = facts.begin(), end = facts.end();
