@@ -71,7 +71,9 @@ struct	Node
   }
 };
 
-typedef std::vector< Node > RulesSet;
+typedef Node	Rule;
+
+typedef std::vector< Rule > RulesSet;
 typedef std::map< Fact, bool > FactsSet;
 
 static RulesSet	rules;
@@ -97,6 +99,8 @@ static Node*	create_binary_tree_from_expression(std::string& expr)
 {
   (void)expr;
 
+  
+
   return new Node();
 }
 
@@ -108,7 +112,7 @@ static void	prepare_rule(std::string& expression, std::string& conclusion)
   (void)left;
   (void)right;
 
-  rules.push_back(Node(RULE,
+  rules.push_back(Rule(RULE,
 		       new Node(FLAG, NULL, NULL, expression),
 		       new Node(FLAG, NULL, NULL, conclusion)));
 }
