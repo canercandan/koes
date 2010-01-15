@@ -7,17 +7,9 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 
-typedef std::string	Data;
-typedef Data		Fact;
-typedef Data		Operator;
-
-enum	OperatorEnum {FLAG = 0, RULE, AND, OR, XOR, NOT};
-
-struct	OperatorStruct
-{
-  OperatorEnum	op;
-  Operator	desc;
-};
+#include "typedefs.h"
+#include "node.h"
+#include "sets.h"
 
 static OperatorStruct	operators[] = {
   {FLAG, "F"},
@@ -29,55 +21,32 @@ static OperatorStruct	operators[] = {
   {(OperatorEnum)-1, ""}
 };
 
-struct	Node
-{
-  OperatorEnum	op;
-  Node*		left;
-  Node*		right;
-  Data		data;
-
-  Node(OperatorEnum _op = FLAG,
-       Node* _left = NULL,
-       Node* _right = NULL,
-       Data _data = "NONE")
-    : op(_op), left(_left), right(_right), data(_data)
-  {
-    if (data == "NONE")
-      data = operators[op].desc;
-  }
-
-  Node(const Node& n)
-  {
-    *this = n;
-  }
-
-  Node&	operator=(const Node& n)
-  {
-    if (this != &n)
-      {
-	this->op = n.op;
-
-	this->left = n.left;
-	this->right = n.right;
-	this->data = n.data;
-      }
-    return *this;
-  }
-
-  ~Node()
-  {
-    delete left;
-    delete right;
-  }
-};
-
-typedef Node	Rule;
-
-typedef std::vector< Rule > RulesSet;
-typedef std::map< Fact, bool > FactsSet;
-
 static RulesSet	rules;
 static FactsSet	facts;
+
+Node::Node(OperatorEnum _op /*= FLAG*/,
+	   Node* _left /*= NULL*/,
+	   Node* _right /*= NULL*/,
+	   Data _data /*= "NONE"*/)
+  : op(_op), left(_left), right(_right), data(_data)
+{
+  if (data == "NONE")
+    data = operators[op].desc;
+}
+
+Node::~Node()
+{
+  if (left != NULL)
+    {
+      delete left;
+      left = NULL;
+    }
+  if (right != NULL)
+    {
+      delete right;
+      right = NULL;
+    }
+}
 
 static void	prepare_fact(std::string& expression, std::string& conclusion)
 {

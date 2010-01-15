@@ -1,5 +1,5 @@
 all:
-	g++ main.cpp -o es -W -Wall -Werror
+	g++ main.cpp -o es -W -Wall -Werror -g
 
 fclean:
 	rm -f *~ *.o es
