@@ -7,21 +7,16 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 
-#define		AND		"&"
-#define		OR		"|"
-#define		XOR		"^"
-#define		NOT		"!"
-#define		SEPERATOR	"->"
+typedef std::string	Data;
+typedef Data		Fact;
+typedef Data		Operator;
 
-typedef std::string	Fact;
-
-enum Operator {FACT, AND, OR, XOR, NOT, SEPERATOR};
+static Operator	operators[] = {"&", "|", "^", "!", "->"};
 
 //struct Entry;
 struct Entry
 {
-  Operator	op;
-  Fact		fact;
+  Data		data;
   Entry*	left;
   Entry*	right;
 };
