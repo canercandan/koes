@@ -1,5 +1,5 @@
 all:
-	g++ main.cpp -o es -W -Wall -Werror -g
+	g++ main.cpp backward_chaining.cpp -o es -W -Wall -Werror -g
 
 fclean:
 	rm -f *~ *.o es
