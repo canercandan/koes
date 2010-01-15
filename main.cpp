@@ -78,12 +78,18 @@ static void	prepare_rule(std::string& expression, std::string& conclusion)
   Node*		left = create_binary_tree_from_expression(expression);
   Node*		right = create_binary_tree_from_expression(conclusion);
 
-  (void)left;
-  (void)right;
+  delete left;
+  delete right;
 
-  rules.push_back(Rule(RULE,
-		       new Node(FLAG, NULL, NULL, expression),
-		       new Node(FLAG, NULL, NULL, conclusion)));
+  rules.push_back(new Rule(RULE,
+			   new Node(FLAG, NULL, NULL, expression),
+			   new Node(FLAG, NULL, NULL, conclusion)));
+}
+
+static void	delete_rules()
+{
+  for (int i = 0, size = rules.size(); i < size; ++i)
+    delete rules[i];
 }
 
 static void	fill_out(std::ifstream& f)
@@ -125,4 +131,6 @@ int	main(int ac, char** av)
     {
       std::cout << it->first << " = " << std::boolalpha << it->second << std::endl;
     }
+
+  delete_rules();
 }

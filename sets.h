@@ -5,7 +5,7 @@
 
 typedef Node	Rule;
 
-typedef std::vector< Rule > RulesSet;
+typedef std::vector< Rule* > RulesSet;
 typedef std::map< Fact, bool > FactsSet;
 
 #endif // !__SET_H__
