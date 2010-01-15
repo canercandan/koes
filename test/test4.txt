@@ -1,0 +1,4 @@
+cat->true
+dog->true
+aaa->true
+cat&dog&aaa->tiger

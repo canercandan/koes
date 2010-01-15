@@ -10,7 +10,7 @@ struct	Node
   Node*		right;
   Data		data;
 
-  Node(OperatorEnum _op = FLAG,
+  Node(OperatorEnum _op = FACT,
        Node* _left = NULL,
        Node* _right = NULL,
        Data _data = "NONE");

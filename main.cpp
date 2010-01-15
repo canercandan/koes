@@ -12,7 +12,7 @@
 #include "sets.h"
 
 static OperatorStruct	operators[] = {
-  {FLAG, "F"},
+  {FACT, "F"},
   {RULE, "->"},
   {AND, "&"},
   {OR, "|"},
@@ -24,7 +24,7 @@ static OperatorStruct	operators[] = {
 static RulesSet	rules;
 static FactsSet	facts;
 
-Node::Node(OperatorEnum _op /*= FLAG*/,
+Node::Node(OperatorEnum _op /*= FACT*/,
 	   Node* _left /*= NULL*/,
 	   Node* _right /*= NULL*/,
 	   Data _data /*= "NONE"*/)
@@ -50,40 +50,94 @@ Node::~Node()
 
 static void	prepare_fact(std::string& expression, std::string& conclusion)
 {
-  std::vector<std::string>	v;
-  boost::split(v, expression, boost::is_any_of("&|^!"));
+  std::vector<std::string>	vec;
+  boost::split(vec, expression, boost::is_any_of("&|^!"));
 
-  if (v.size() == 1) // it means that we have only one fact to set
+  if (vec.size() == 1) // it means that we have only one fact to set
     {
       facts[expression] = (conclusion == "true") ? true : false;
     }
   else // it means there are several facts to set A&B&C&D->true
     {
-      for (int i = 0, size = v.size(); i < size; ++i)
-	facts[v[i]] = (conclusion == "true") ? true : false;
+      for (int i = 0, size = vec.size(); i < size; ++i)
+	facts[vec[i]] = (conclusion == "true") ? true : false;
     }
+}
+
+static std::string::size_type	get_operator_position(std::string& expr, std::string::size_type index = 0)
+{
+  return expr.find_first_of("&|^!", index);
+}
+
+static OperatorEnum	get_operator(Operator& op)
+{
+  for (int i = 0; operators[i].op != -1; ++i)
+    if (operators[i].desc == op)
+      return operators[i].op;
+  return (OperatorEnum)-1;
+}
+
+static void	print_out_binary_tree(Node* node)
+{
+  if (node == NULL)
+    return;
+
+  if (node->op == FACT)
+    {
+      std::cout << "FACT [" << node->data << "]" << std::endl;
+      return;
+    }
+
+  std::cout << "OP [" << node->data << "]" << std::endl;
+
+  if (node->left != NULL)
+    print_out_binary_tree(node->left);
+
+  if (node->right != NULL)
+    print_out_binary_tree(node->right);
 }
 
 static Node*	create_binary_tree_from_expression(std::string& expr)
 {
-  (void)expr;
+  std::string			str(expr);
+  std::string::size_type	found = get_operator_position(str);
 
-  
+  if (found == std::string::npos) // in the case where we have only 1 fact into expression
+    return new Node(FACT, NULL, NULL, str);
 
-  return new Node();
+  Node*	node = NULL;
+  Node*	root = NULL;
+
+  while (found != std::string::npos)
+    {
+      Operator	op = str.substr(found, 1);
+      Fact	left = str.substr(0, found);
+      Node*	newnode = new Node(get_operator(op),
+				   new Node(FACT, NULL, NULL, left),
+				   NULL);
+
+      if (node != NULL)
+	node->right = newnode;
+      if (root == NULL)
+	root = newnode;
+      node = newnode;
+      str = str.substr(found + 1);
+      found = get_operator_position(str);
+    }
+
+  if (node != NULL)
+    node->right = new Node(FACT, NULL, NULL, str);
+
+  print_out_binary_tree(root);
+
+  return root;
 }
 
 static void	prepare_rule(std::string& expression, std::string& conclusion)
 {
-  Node*		left = create_binary_tree_from_expression(expression);
-  Node*		right = create_binary_tree_from_expression(conclusion);
-
-  delete left;
-  delete right;
-
   rules.push_back(new Rule(RULE,
-			   new Node(FLAG, NULL, NULL, expression),
-			   new Node(FLAG, NULL, NULL, conclusion)));
+			   create_binary_tree_from_expression(expression),
+			   create_binary_tree_from_expression(conclusion)));
 }
 
 static void	delete_rules()
@@ -99,7 +153,7 @@ static void	fill_out(std::ifstream& f)
     {
       std::vector<std::string>	vec;
       boost::iter_split(vec, line, boost::first_finder("->"));
-      std::copy(vec.begin(), vec.end(), std::ostream_iterator<std::string>(std::cout, " "));
+      std::copy(vec.begin(), vec.end(), std::ostream_iterator<std::string>(std::cout, "->"));
       std::cout << std::endl;
 
       std::string&	expression = vec[0];

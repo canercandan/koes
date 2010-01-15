@@ -1,0 +1,2 @@
+- Binary tree storing expressions and conclusions (respect priority)
+- Be able to set several facts to one value (A&B&C&D->true)
