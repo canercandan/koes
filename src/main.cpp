@@ -6,7 +6,6 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <boost/program_options.hpp>
 
 #include "typedefs.h"
 #include "node.h"
@@ -25,11 +24,6 @@ static OperatorStruct	operators[] = {
 static RulesSet	rules;
 static FactsSet	facts;
 
-namespace po = boost::program_options;
-
-static po::options_description	desc;
-static po::variables_map	vm;
-
 Node::Node(OperatorEnum _op /*= FACT*/,
 	   Node* _left /*= NULL*/,
 	   Node* _right /*= NULL*/,
@@ -43,9 +37,15 @@ Node::Node(OperatorEnum _op /*= FACT*/,
 Node::~Node()
 {
   if (left != NULL)
-    delete left;
+    {
+      delete left;
+      left = NULL;
+    }
   if (right != NULL)
-    delete right;
+    {
+      delete right;
+      right = NULL;
+    }
 }
 
 static void	prepare_fact(std::string& expression, std::string& conclusion)
@@ -54,10 +54,14 @@ static void	prepare_fact(std::string& expression, std::string& conclusion)
   boost::split(vec, expression, boost::is_any_of("&|^!"));
 
   if (vec.size() == 1) // it means that we have only one fact to set
-    facts[expression] = (conclusion == "true") ? true : false;
+    {
+      facts[expression] = (conclusion == "true") ? true : false;
+    }
   else // it means there are several facts to set A&B&C&D->true
-    for (int i = 0, size = vec.size(); i < size; ++i)
-      facts[vec[i]] = (conclusion == "true") ? true : false;
+    {
+      for (int i = 0, size = vec.size(); i < size; ++i)
+	facts[vec[i]] = (conclusion == "true") ? true : false;
+    }
 }
 
 static std::string::size_type	get_operator_position(std::string& expr, std::string::size_type index = 0)
@@ -124,7 +128,7 @@ static Node*	create_binary_tree_from_expression(std::string& expr)
   if (node != NULL)
     node->right = new Node(FACT, NULL, NULL, str);
 
-  //print_out_binary_tree(root);
+  print_out_binary_tree(root);
 
   return root;
 }
@@ -149,6 +153,8 @@ static void	fill_out(std::ifstream& f)
     {
       std::vector<std::string>	vec;
       boost::iter_split(vec, line, boost::first_finder("->"));
+      std::copy(vec.begin(), vec.end(), std::ostream_iterator<std::string>(std::cout, "->"));
+      std::cout << std::endl;
 
       std::string&	expression = vec[0];
       std::string&	conclusion = vec[1];
@@ -160,59 +166,27 @@ static void	fill_out(std::ifstream& f)
     }
 }
 
-static void	options_parsing(int ac, char** av)
-{
-  try
-    {
-      desc.add_options()
-	("help,h", "produce help message")
-	("filename,f", po::value<FileVector>()->composing(),
-	 "provide files")
-	("verbose,v", po::value<int>()->default_value(0),
-	 "set the verbose (cf. -v 0 = quiet)")
-	;
-
-      po::store(po::parse_command_line(ac, av, desc), vm);
-      po::notify(vm);
-
-      if (vm.count("help") || !vm.count("filename"))
-	{
-	  std::cout << desc << std::endl;
-	  exit(1);
-	}
-    }
-  catch (std::exception& e)
-    {
-      std::stringstream ss;
-      ss << "error: " << e.what();
-      throw std::runtime_error(ss.str());
-    }
-  catch (...)
-    {
-      throw std::runtime_error("Exception of unknown type!");
-    }
-}
-
 int	main(int ac, char** av)
 {
-  options_parsing(ac, av);
+  if (ac < 2)
+    throw std::runtime_error("no argument");
 
-  FileVector	fs = vm["filename"].as<FileVector>();
-
-  for (FileVector::iterator it = fs.begin(), end = fs.end();
-       it != end; ++it)
+  for (int i = 1; i < ac; ++i)
     {
-      std::cout << "FILENAME [" << *it << "]" << std::endl;
-      std::ifstream f(it->c_str());
+      std::ifstream f;
+      f.open(av[i]);
       fill_out(f);
       f.close();
     }
 
   std::cout << "print out facts table:" << std::endl;
-  for (FactsSet::iterator it = facts.begin(), end = facts.end(); it != end; ++it)
-    std::cout << it->first << " = " << std::boolalpha << it->second << std::endl;
-
+  for (FactsSet::iterator it = facts.begin(), end = facts.end();
+       it != end; ++it)
+    {
+      std::cout << it->first << " = " << std::boolalpha << it->second << std::endl;
+    }
+  //  printf("%d\n", facts["A"]);
+bool b = truth_value("C", rules, facts);
+ std::cout << b << std::endl;
   delete_rules();
-
-  return 0;
 }
