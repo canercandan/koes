@@ -7,7 +7,7 @@ NAME		=	$(PATH_BIN)/es
 
 SRCS		=	\
 			$(PATH_SRC)/main.cpp			\
-#			$(PATH_SRC)/backward_chaining.cpp
+			$(PATH_SRC)/backward_chaining.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)
 
