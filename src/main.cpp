@@ -145,10 +145,13 @@ static void	delete_rules()
 static void	fill_out(std::ifstream& f)
 {
   char	line[1024];
+  std::string	delim;
+
   while (f.getline(line, 1024))
     {
       std::vector<std::string>	vec;
-      boost::iter_split(vec, line, boost::first_finder("->"));
+      (strstr(line, "=") != NULL) ? (delim = "=") : (delim = "->");
+      boost::iter_split(vec, line, boost::first_finder(delim));
 
       std::string&	expression = vec[0];
       std::string&	conclusion = vec[1];
@@ -177,21 +180,21 @@ static void	options_parsing(int ac, char** av)
       po::store(po::parse_command_line(ac, av, desc), vm);
       po::notify(vm);
 
-      if (vm.count("help") || !vm.count("filename") || !vm.count("wish"))
+      if (vm.count("help"))
 	{
-	  std::cout << desc << std::endl;
+	  // std::cout << desc << std::endl;
 	  exit(1);
 	}
     }
   catch (std::exception& e)
     {
       std::stringstream ss;
-      ss << "error: " << e.what();
-      throw std::runtime_error(ss.str());
+      // ss << "error: " << e.what();
+      // throw std::runtime_error(ss.str());
     }
   catch (...)
     {
-      throw std::runtime_error("Exception of unknown type!");
+      // throw std::runtime_error("Exception of unknown type!");
     }
 }
 
