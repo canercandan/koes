@@ -124,7 +124,7 @@ static Node*	create_binary_tree_from_expression(std::string& expr)
   if (node != NULL)
     node->right = new Node(FACT, NULL, NULL, str);
 
-  print_out_binary_tree(root);
+  // print_out_binary_tree(root);
 
   return root;
 }
@@ -182,19 +182,19 @@ static void	options_parsing(int ac, char** av)
 
       if (vm.count("help"))
 	{
-	  // std::cout << desc << std::endl;
+	  std::cout << desc << std::endl;
 	  exit(1);
 	}
     }
   catch (std::exception& e)
     {
       std::stringstream ss;
-      // ss << "error: " << e.what();
-      // throw std::runtime_error(ss.str());
+      ss << "error: " << e.what();
+      throw std::runtime_error(ss.str());
     }
   catch (...)
     {
-      // throw std::runtime_error("Exception of unknown type!");
+      throw std::runtime_error("Exception of unknown type!");
     }
 }
 
@@ -282,6 +282,11 @@ int	main(int ac, char** av)
   for (FactsSet::iterator it = facts.begin(), end = facts.end();
        it != end; ++it)
     std::cout << it->first << " = " << std::boolalpha << it->second << std::endl;
+
+  std::cout << "print out rules table:" << std::endl;
+  for (RulesSet::iterator it = rules.begin(), end = rules.end();
+       it != end; ++it)
+    print_out_binary_tree(*it);
 
   StringVector	ws = vm["wish"].as<StringVector>();
   for (StringVector::iterator it = ws.begin(), end = ws.end();
