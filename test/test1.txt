@@ -1,8 +1,2 @@
-A=true
-I=true
+A=false
 A->B
-B->C
-B->D
-C&D->E
-F=true
-G=false
