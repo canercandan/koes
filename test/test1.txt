@@ -1,2 +1,2 @@
-A=false
+A=true
 A->B

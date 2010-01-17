@@ -54,7 +54,7 @@ static void	prepare_fact(std::string& expression, std::string& conclusion)
   boost::split(vec, expression, boost::is_any_of("&|^!"));
 
   if (vec.size() == 1) // it means that we have only one fact to set
-    facts[expression] = (conclusion == "true") ? true : false;
+    facts[expression] = (conclusion == "true") ? true : false;      
   else // it means there are several facts to set A&B&C&D->true
     for (int i = 0, size = vec.size(); i < size; ++i)
       facts[vec[i]] = (conclusion == "true") ? true : false;
@@ -209,7 +209,8 @@ static Rule*	get_a_concluding_rule_and_remove_rule(Fact F)
       if (conclusion->op == FACT)
 	if (conclusion->data == F)
 	  {
-	    rules.erase(it);
+	    std::cout<<"in get_a_con\n";
+	    //rules.erase(it);
 	    return rule;
 	  }
     }
@@ -240,13 +241,13 @@ static int	fire_ability(Rule* R)
 static int	truth_value(Fact F)
 {
   Rule*	rule;
-  if (facts[F] == true)
-    return (1);
-  else if(facts[F] == false)
-    return (0);
-  
+  if (facts.find(F)->second == true)
+    return 1;
+  else if (facts.find(F)->second == false)
+    return 0;
   while ((rule = get_a_concluding_rule_and_remove_rule(F)) != NULL)
     {
+      std::cout << "in while\n";
       if (fire_ability(rule) == 1)
 	{
 	  facts[F] = true;
@@ -297,7 +298,9 @@ int	main(int ac, char** av)
   std::string a;
   std::cin >> a;
   std::cout << "target FACT: "<< a <<std::endl;
-  std::cout << "reslut" << truth_value(a) << std::endl;
+  std::cout << "reslut: " << truth_value(a) << " Fact: "
+  	    << facts[a] << std::boolalpha << std::endl;
+  //  std::cout << facts["C"] << std::endl; 
   delete_rules();
 
   return 0;
@@ -313,11 +316,10 @@ static int	bool_expression(Node* exp)
 
   if (exp->op == FACT)
     return (truth_value(exp->data));
-  else
-    if (exp->right->op == FACT)
-      res = operation(exp->op, truth_value(exp->left->data), truth_value(exp->right->data));
-    else 
-      res = operation(exp->op, truth_value(exp->left->data), bool_expression(exp->right));
+  if (exp->right->op == FACT)
+    res = operation(exp->op, truth_value(exp->left->data), truth_value(exp->right->data));
+  else 
+    res = operation(exp->op, truth_value(exp->left->data), bool_expression(exp->right));
   return (res);
 }
 
