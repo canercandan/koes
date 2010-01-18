@@ -12,17 +12,19 @@
 #include "node.h"
 #include "sets.h"
 
-int	xor_operation(int a, int b);
-int	or_operation(int a, int b);
-int	and_operation(int a, int b);
-typedef int (*functions)(int, int);
+Value	xor_operation(Value a, Value b);
+Value	or_operation(Value a, Value b);
+Value	and_operation(Value a, Value b);
+
+
+typedef Value (*functions)(Value, Value);
  functions operationArray[] = {
   and_operation,
   or_operation,
   xor_operation
   //  not_operation
 };
-static int	operation(OperatorEnum op, int a, int b);
+static Value	operation(OperatorEnum op, Value a, Value b);
 
 
 static OperatorStruct	operators[] = {
@@ -229,51 +231,42 @@ static Rule*	get_a_concluding_rule_and_remove_rule(Fact F)
   return NULL;
 }
 
-typedef std::vector<Fact>	FactsVector;
+static Value	bool_expression(Node* exp);
+static Value	truth_value(Fact);
+static Value	fire_ability(Rule*);
 
-// static void	condition(FactsVector& facts_to_check, Rule* R)
-// {
-//   (void)facts_to_check;
-
-//   if (R->op == FACT)
-//     return;
-// }
-static int	bool_expression(Node* exp);
-static int	truth_value(Fact);
-static int	fire_ability(Rule*);
-
-static int	fire_ability(Rule* R)
+static Value	fire_ability(Rule* R)
 {
-  int		res;
+  Value		res;
   //in the case for only one conclusion
   res = bool_expression(R->left);
   return (res);
 }
 
-static int	truth_value(Fact F)
+static Value	truth_value(Fact F)
 {
   Rule*	rule;
 
   if (facts.find(F) != facts.end() && facts.find(F)->second == true)
-    return 1;
+    return TRUE;
   else if (facts.find(F) != facts.end() && facts.find(F)->second == false)
-    return 0;
+    return FALSE;
   while ((rule = get_a_concluding_rule_and_remove_rule(F)) != NULL)
     {
       if (fire_ability(rule) == 1)
 	{
 	  facts[F] = true;
-	  return 1;
+	  return TRUE;
 	}
       else if (fire_ability(rule) == 0)
 	{
 	  facts[F] = false;
-	  return 0;
+	  return FALSE;
 	}
       else
 	break;
     }
-  return -1;
+  return UNKNOWN;
  }
 
 int	main(int ac, char** av)
@@ -324,9 +317,9 @@ int	main(int ac, char** av)
 }
 
 //1:true, 0:false, -1:undertermind
-static int	bool_expression(Node* exp)
+static Value	bool_expression(Node* exp)
 {
-  int		res;
+  Value		res;
 
   if (exp->op == FACT)
     return (truth_value(exp->data));
@@ -338,43 +331,43 @@ static int	bool_expression(Node* exp)
   return (res);
 }
 
-int	operation(OperatorEnum op, int a, int b)
+Value	operation(OperatorEnum op, Value a, Value b)
 {
-  int		res;
+  Value		res;
   
   if (op >= AND || op < NOT)
     res = (operationArray[op - 2])(a, b);
   return (res);
 }
 
-int	and_operation(int a, int b)
+Value	and_operation(Value a, Value b)
 {
   if (a == 1 && b == 1)
-    return (1);
+    return (TRUE);
   else if (a == 0 || b == 0)
-    return (0);
-  return (-1);
+    return (FALSE);
+  return (UNKNOWN);
 }
 
-int	or_operation(int a, int b)
+Value	or_operation(Value a, Value b)
 {
   if (a == 1 || b == 1)
-    return (1);
+    return (TRUE);
   else if (a == 0 && b == 0)
-    return (0);
-  return (-1);
+    return (FALSE);
+  return (UNKNOWN);
 }
 
-int	xor_operation(int a, int b)
+Value	xor_operation(Value a, Value b)
 {
   int		r;
 
   r = or_operation(a, b);
   if (r == 1)
-    return (0);
+    return (FALSE);
   else if (r == 0)
-    return (1);
-  return (-1);
+    return (TRUE);
+  return (UNKNOWN);
 }
 
 

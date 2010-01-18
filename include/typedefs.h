@@ -15,4 +15,6 @@ struct	OperatorStruct
   Operator	desc;
 };
 
+enum	Value {TRUE = 1, FALSE = 0, UNKNOWN = -1};
+
 #endif // !__TYPEDEFS_H__

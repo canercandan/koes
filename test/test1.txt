@@ -1,1 +1,3 @@
+A=false
+A->B
 B->C
