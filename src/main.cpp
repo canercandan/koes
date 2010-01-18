@@ -161,11 +161,14 @@ static void	fill_out(std::ifstream& f)
 {
   char	line[1024];
   std::string	delim;
+  std::string	s;
 
   while (f.getline(line, 1024))
     {
       std::vector<std::string>	vec;
-      (strstr(line, "=") != NULL) ? (delim = "=") : (delim = "->");
+      s = line;
+      //(strstr(line, "=") != NULL) ? (delim = "=") : (delim = "->");
+      (s.std::string::find("=") == std::string::npos) ? (delim = "=") : (delim = "->");
       boost::iter_split(vec, line, boost::first_finder(delim));
 
       std::string&	expression = vec[0];
