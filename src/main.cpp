@@ -12,6 +12,19 @@
 #include "node.h"
 #include "sets.h"
 
+int	xor_operation(int a, int b);
+int	or_operation(int a, int b);
+int	and_operation(int a, int b);
+typedef int (*functions)(int, int);
+ functions operationArray[] = {
+  and_operation,
+  or_operation,
+  xor_operation
+  //  not_operation
+};
+static int	operation(OperatorEnum op, int a, int b);
+
+
 static OperatorStruct	operators[] = {
   {FACT, "F"},
   {RULE, "->"},
@@ -262,10 +275,7 @@ static int	truth_value(Fact F)
     }
   return -1;
  }
-static int	xor_operation(int a, int b);
-static int	or_operation(int a, int b);
-static int	add_operation(int a, int b);
-static int	operation(OperatorEnum op, int a, int b);
+
 int	main(int ac, char** av)
 {
   options_parsing(ac, av);
@@ -328,30 +338,16 @@ static int	bool_expression(Node* exp)
   return (res);
 }
 
-
-static int	operation(OperatorEnum op, int a, int b)
+int	operation(OperatorEnum op, int a, int b)
 {
   int		res;
-
-  switch(op)
-    {
-    case AND:
-      res = add_operation(a, b);
-      break;
-    case OR:
-      res = or_operation(a, b);
-      break;
-    case XOR:
-      res = xor_operation(a, b);
-      break;
-    default:
-      fprintf(stderr, "invalid operator\n");
-      exit(0);
-    }
+  
+  if (op >= AND || op < NOT)
+    res = (operationArray[op - 2])(a, b);
   return (res);
 }
 
-static int	add_operation(int a, int b)
+int	and_operation(int a, int b)
 {
   if (a == 1 && b == 1)
     return (1);
@@ -360,7 +356,7 @@ static int	add_operation(int a, int b)
   return (-1);
 }
 
-static int	or_operation(int a, int b)
+int	or_operation(int a, int b)
 {
   if (a == 1 || b == 1)
     return (1);
@@ -369,7 +365,7 @@ static int	or_operation(int a, int b)
   return (-1);
 }
 
-static int	xor_operation(int a, int b)
+int	xor_operation(int a, int b)
 {
   int		r;
 
