@@ -209,7 +209,6 @@ static Rule*	get_a_concluding_rule_and_remove_rule(Fact F)
       if (conclusion->op == FACT)
 	if (conclusion->data == F)
 	  {
-	    std::cout<<"in get_a_con\n";
 	    //rules.erase(it);
 	    return rule;
 	  }
@@ -233,7 +232,7 @@ static int	fire_ability(Rule*);
 static int	fire_ability(Rule* R)
 {
   int		res;
-
+  //in the case for only one conclusion
   res = bool_expression(R->left);
   return (res);
 }
@@ -241,13 +240,13 @@ static int	fire_ability(Rule* R)
 static int	truth_value(Fact F)
 {
   Rule*	rule;
-  if (facts.find(F)->second == true)
+
+  if (facts.find(F) != facts.end() && facts.find(F)->second == true)
     return 1;
-  else if (facts.find(F)->second == false)
+  else if (facts.find(F) != facts.end() && facts.find(F)->second == false)
     return 0;
   while ((rule = get_a_concluding_rule_and_remove_rule(F)) != NULL)
     {
-      std::cout << "in while\n";
       if (fire_ability(rule) == 1)
 	{
 	  facts[F] = true;
@@ -258,10 +257,15 @@ static int	truth_value(Fact F)
 	  facts[F] = false;
 	  return 0;
 	}
+      else
+	break;
     }
   return -1;
  }
-
+static int	xor_operation(int a, int b);
+static int	or_operation(int a, int b);
+static int	add_operation(int a, int b);
+static int	operation(OperatorEnum op, int a, int b);
 int	main(int ac, char** av)
 {
   options_parsing(ac, av);
@@ -298,17 +302,17 @@ int	main(int ac, char** av)
   std::string a;
   std::cin >> a;
   std::cout << "target FACT: "<< a <<std::endl;
-  std::cout << "reslut: " << truth_value(a) << " Fact: "
-  	    << facts[a] << std::boolalpha << std::endl;
+  std::cout << "reslut: " << truth_value(a) << std::endl;
+  // int	a, b;
+  // std::cin >> a >> b;
+  // std::cout << "a:" << a << "b:" << b << std::endl;
+  // std::cout << or_operation(a, b) << std::endl;  	  
   //  std::cout << facts["C"] << std::endl; 
   delete_rules();
 
   return 0;
 }
-static int	xor_operation(int a, int b);
-static int	or_operation(int a, int b);
-static int	add_operation(int a, int b);
-static int	operation(OperatorEnum op, int a, int b);
+
 //1:true, 0:false, -1:undertermind
 static int	bool_expression(Node* exp)
 {
@@ -316,10 +320,11 @@ static int	bool_expression(Node* exp)
 
   if (exp->op == FACT)
     return (truth_value(exp->data));
-  if (exp->right->op == FACT)
-    res = operation(exp->op, truth_value(exp->left->data), truth_value(exp->right->data));
   else 
-    res = operation(exp->op, truth_value(exp->left->data), bool_expression(exp->right));
+    if (exp->right->op == FACT)
+      res = operation(exp->op, truth_value(exp->left->data), truth_value(exp->right->data));
+    else 
+      res = operation(exp->op, truth_value(exp->left->data), bool_expression(exp->right));
   return (res);
 }
 
@@ -348,7 +353,7 @@ static int	operation(OperatorEnum op, int a, int b)
 
 static int	add_operation(int a, int b)
 {
-  if (a && b)
+  if (a == 1 && b == 1)
     return (1);
   else if (a == 0 || b == 0)
     return (0);
@@ -357,7 +362,7 @@ static int	add_operation(int a, int b)
 
 static int	or_operation(int a, int b)
 {
-  if (a || b)
+  if (a == 1 || b == 1)
     return (1);
   else if (a == 0 && b == 0)
     return (0);
