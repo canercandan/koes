@@ -342,33 +342,47 @@ static void	print_result(Fact F)
     sRes = "FALSE";
   else
     sRes = "UNKNOWN";
-
   std::cout << "[" << F << "] = [" << sRes << "]" << std::endl;
 }
 
-int	main(int ac, char** av)
+static void	files_parsing()
 {
-  options_parsing(ac, av);
-
   StringVector	fs = vm["filename"].as<StringVector>();
   for (StringVector::iterator it = fs.begin(), end = fs.end();
        it != end; ++it)
     {
       std::cout << "FILENAME [" << *it << "]" << std::endl;
-      std::ifstream f(it->c_str());
-      fill_out(f);
-      f.close();
+      std::cout << "{{{" << std::endl;
+      system(std::string("cat " + *it).c_str());
+      std::cout << "}}}" << std::endl;
+      std::ifstream	file(it->c_str());
+      fill_out(file);
+      file.close();
     }
+}
 
+static void	print_out_facts_table()
+{
   std::cout << "print out facts table:" << std::endl;
   for (FactsSet::iterator it = facts.begin(), end = facts.end();
        it != end; ++it)
     std::cout << it->first << " = " << std::boolalpha << it->second << std::endl;
+}
 
+static void	print_out_rules_table()
+{
   std::cout << "print out rules table:" << std::endl;
   for (RulesSet::iterator it = rules.begin(), end = rules.end();
        it != end; ++it)
     print_out_binary_tree(*it);
+}
+
+int	main(int ac, char** av)
+{
+  options_parsing(ac, av);
+  files_parsing();
+  print_out_facts_table();
+  print_out_rules_table();
 
   if (vm.count("wish"))
     {
@@ -379,9 +393,14 @@ int	main(int ac, char** av)
     }
   else
     {
-      std::string a;
-      std::cin >> a;
-      print_result(a);
+      std::cout << "CTRL+C to quit" << std::endl;
+      while (1)
+	{
+	  std::string	fact;
+	  std::cout << "Fact> ";
+	  std::cin >> fact;
+	  print_result(fact);
+	}
     }
 
   delete_rules();
