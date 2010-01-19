@@ -354,12 +354,12 @@ static void	print_result(Fact F)
   std::string	sRes;
 
   if (res == TRUE)
-    sRes = "TRUE";
+    sRes = "true";
   else if (res == FALSE)
-    sRes = "FALSE";
+    sRes = "false";
   else
-    sRes = "UNKNOWN";
-  std::cout << "[" << F << "] = [" << sRes << "]" << std::endl;
+    sRes = "unknown";
+  std::cout << sRes << std::endl;
 }
 
 static void	print_out_facts_table()
