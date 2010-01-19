@@ -100,6 +100,8 @@ static void	print_out_binary_tree(Node* node, bool tree = false)
       std::cout << node->data;
       if (tree)
 	std::cout << "]" << std::endl;
+      else
+	std::cout << " ";
       return;
     }
 
@@ -114,7 +116,7 @@ static void	print_out_binary_tree(Node* node, bool tree = false)
     print_out_binary_tree(node->left, tree);
 
   if (!tree)
-    std::cout << node->data;
+    std::cout << node->data << " ";
 
   if (node->right != NULL)
     print_out_binary_tree(node->right, tree);
@@ -210,6 +212,7 @@ static void	options_parsing(int ac, char** av)
 	 "provide a fact to set to true")
 	("false,F", po::value<StringVector>()->composing(),
 	 "provide a fact to set to false")
+	("tree,t", "enable binary tree view while file parsing")
 	;
 
       po::store(po::parse_command_line(ac, av, desc), vm);
@@ -219,11 +222,6 @@ static void	options_parsing(int ac, char** av)
 	{
 	  std::cout << desc << std::endl;
 	  exit(1);
-	}
-
-      if (vm.count("true"))
-	{
-	  //for (StringVector::iterator it = vm
 	}
     }
   catch (std::exception& e)
@@ -447,7 +445,7 @@ static void	print_out_rules_table(bool tree = false)
       if (tree)
 	std::cout << "conclusion:" << std::endl;
       else
-	std::cout << " -> ";
+	std::cout << "-> ";
       print_out_binary_tree((*it)->right, tree);
       if (!tree)
 	std::cout << std::endl;
@@ -470,7 +468,7 @@ static void	files_parsing()
       file.close();
     }
   print_out_facts_table();
-  print_out_rules_table();
+  print_out_rules_table(vm.count("tree"));
 }
 
 static void	facts_parsing(bool value)
