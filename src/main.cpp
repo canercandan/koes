@@ -37,6 +37,13 @@ static OperatorStruct	operators[] = {
   {(OperatorEnum)-1, ""}
 };
 
+static BooleanStruct	booleans[] = {
+  {TRUE, "ture"},
+  {FALSE, "false"},
+  {UNKNOWN, "unknown"},
+  {(Boolean)-1, ""}
+};
+
 static RulesSet	rules;
 static FactsSet	facts;
 
@@ -69,10 +76,10 @@ static void	prepare_fact(std::string& expression, std::string& conclusion)
   boost::split(vec, expression, boost::is_any_of(EXPR_OPERATORS));
 
   if (vec.size() == 1) // it means that we have only one fact to set
-    facts[expression] = (conclusion == "true") ? true : false;
+    facts[expression] = (conclusion == "true") ? TRUE : FALSE;
   else // it means there are several facts to set A&B&C&D->true
     for (int i = 0, size = vec.size(); i < size; ++i)
-      facts[vec[i]] = (conclusion == "true") ? true : false;
+      facts[vec[i]] = (conclusion == "true") ? TRUE : FALSE;
 }
 
 static std::string::size_type	get_operator_position(std::string& expr, std::string::size_type index = 0)
@@ -303,39 +310,57 @@ static int      count_facts_in_expression(Node* node)
 	i = i + count_facts_in_expression(node->left) + count_facts_in_expression(node->right);  
     }
   return i;
-    
 }
+
 static Boolean	fire_ability(Rule* R)
 {
   Boolean	condition;
-  //Boolean	conclusion;
-  if (count_facts_in_expression(R->right) == 1)
-    condition = bool_expression(R->left);
-  //else
-  //  conclusion = bool_expression(R->right);
 
-  return condition;
+  condition = bool_expression(R->left);
+  if (R->right->op == FACT)
+    return condition;
+      
+  return UNKNOWN;
+  // else 
+   //   if (condition == TRUE)
+  //     {
+  // 	if (conclusion->op == AND)
+  // 	  {
+  // 	    facts[F] = true;
+  // 	  }
+  // 	else if (conclusion->op == OR)
+  // 	  {
+	    
+  // 	  }
+  //     }
+  //   else if (condition == FALSE)
+  //     {
+  // 	if (condition->op == OR)
+  // 	  {
+  // 	    facts[F] = FALSE;
+  // 	    return false;
+  // 	  }
+  //     }
+  //   else
+  //     {}
 }
-
 static Boolean	truth_value(Fact F)
 {
   Rule*		rule;
   RulesSet	used_rules;
 
-  if (facts.find(F) != facts.end() && facts.find(F)->second == true)
-    return TRUE;
-  if (facts.find(F) != facts.end() && facts.find(F)->second == false)
-    return FALSE;
+  if (facts.find(F) != facts.end())
+    return facts[F];
   while ((rule = get_a_concluding_rule(F, used_rules)) != NULL)
     {
-      if (fire_ability(rule) == 1)
+      if (fire_ability(rule) == TRUE)
 	{
-	  facts[F] = true;
+	  facts[F] = TRUE;
 	  return TRUE;
 	}
-      else if (fire_ability(rule) == 0)
+      else if (fire_ability(rule) == FALSE)
 	{
-	  facts[F] = false;
+	  facts[F] = FALSE;
 	  return FALSE;
 	}
     }
@@ -422,7 +447,7 @@ static void	print_out_facts_table()
   std::cout << "print out facts table:" << std::endl;
   for (FactsSet::iterator it = facts.begin(), end = facts.end();
        it != end; ++it)
-    std::cout << it->first << " = " << std::boolalpha << it->second << std::endl;
+    std::cout << it->first << " = " << booleans[it->second].desc << std::endl;
 }
 
 static void	print_out_rules_table(bool tree = false)
