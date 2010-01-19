@@ -1,6 +1,2 @@
-U=false
-G=true
-E->B
-U->K
-K&G->B
-B->C
+A=true
+!A->C

@@ -11,7 +11,7 @@
 #include "typedefs.h"
 #include "node.h"
 #include "sets.h"
-
+static Value	not_operation(Value a, Value b);
 static Value	xor_operation(Value a, Value b);
 static Value	or_operation(Value a, Value b);
 static Value	and_operation(Value a, Value b);
@@ -21,8 +21,8 @@ typedef Value (*functions)(Value, Value);
  functions operationArray[] = {
   and_operation,
   or_operation,
-  xor_operation
-  //  not_operation
+  xor_operation,
+  not_operation
 };
 
 
@@ -341,7 +341,7 @@ static Value	operation(OperatorEnum op, Value a, Value b)
 {
   Value		res;
   
-  if (op >= AND || op < NOT)
+  if (op >= AND || op <= NOT)
     res = (operationArray[op - 2])(a, b);
   return (res);
 }
@@ -373,4 +373,12 @@ static Value	xor_operation(Value a, Value b)
   return (UNKNOWN);
 }
 
-
+static Value	not_operation(Value a, Value b)
+{
+  (void)a;
+  if (b == TRUE)
+    return (FALSE);
+  else if (b == FALSE)
+    return (TRUE);
+  return (UNKNOWN);
+}
