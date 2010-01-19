@@ -15,7 +15,7 @@
 static Value	xor_operation(Value a, Value b);
 static Value	or_operation(Value a, Value b);
 static Value	and_operation(Value a, Value b);
-
+static Value	operation(OperatorEnum op, Value a, Value b);
 
 typedef Value (*functions)(Value, Value);
  functions operationArray[] = {
@@ -24,7 +24,7 @@ typedef Value (*functions)(Value, Value);
   xor_operation
   //  not_operation
 };
-static Value	operation(OperatorEnum op, Value a, Value b);
+
 
 
 static OperatorStruct	operators[] = {
@@ -214,21 +214,31 @@ static void	options_parsing(int ac, char** av)
       throw std::runtime_error("Exception of unknown type!");
     }
 }
+static bool	find_rule_in_old(Rule* rule, RulesSet& used_rules)
+{
+  for (RulesSet::iterator it = used_rules.begin(), end = used_rules.end();
+       it != end; ++it)
+    {
+      if (rule == *it)
+	return (true);
+    }
+  return (false);
+}
 
-static Rule*	get_a_concluding_rule_and_remove_rule(Fact F)
+static Rule*	get_a_concluding_rule(Fact F, RulesSet& used_rules)
 {
   for (RulesSet::iterator it = rules.begin(), end = rules.end();
        it != end; ++it)
     {
       Rule*	rule = *it;
       Node*	conclusion = rule->right;
-
-      if (conclusion->op == FACT)
-	if (conclusion->data == F)
-	  {
-	    //rules.erase(it);
-	    return rule;
-	  }
+      if (!find_rule_in_old(rule, used_rules))
+	if (conclusion->op == FACT)
+	  if (conclusion->data == F)
+	    {
+	      used_rules.push_back(rule);	    
+	      return rule;
+	    }
     }
   return NULL;
 }
@@ -244,16 +254,15 @@ static Value	fire_ability(Rule* R)
   res = bool_expression(R->left);
   return (res);
 }
-
 static Value	truth_value(Fact F)
 {
   Rule*	rule;
-
+  RulesSet       used_rules;
   if (facts.find(F) != facts.end() && facts.find(F)->second == true)
     return TRUE;
   else if (facts.find(F) != facts.end() && facts.find(F)->second == false)
     return FALSE;
-  while ((rule = get_a_concluding_rule_and_remove_rule(F)) != NULL)
+  while ((rule = get_a_concluding_rule(F, used_rules)) != NULL)
     {
       if (fire_ability(rule) == 1)
 	{
@@ -265,9 +274,8 @@ static Value	truth_value(Fact F)
 	  facts[F] = false;
 	  return FALSE;
 	}
-      else
-	break;
     }
+  used_rules.clear();
   return UNKNOWN;
  }
 
