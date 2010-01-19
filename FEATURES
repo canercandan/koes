@@ -1,3 +1,7 @@
 - Binary tree storing expressions and conclusions (respect priority)
 - Be able to set several facts to one value (A&B&C&D->true)
 - backward chaining only handle [multiply condition -> unique conclusion](A&B->C) until now
+- Nice prompt allowing to add, edit and print facts and rules
+- Options --filename to add one or more file containing rules and facts
+- Options --true/--false allowing to set several facts to true and false
+- Options --wish allowing to ask value of one fact
