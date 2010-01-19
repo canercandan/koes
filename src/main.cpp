@@ -11,6 +11,7 @@
 #include "typedefs.h"
 #include "node.h"
 #include "sets.h"
+#include "defines.h"
 
 static Boolean	xor_operation(Boolean a, Boolean b);
 static Boolean	or_operation(Boolean a, Boolean b);
@@ -65,7 +66,7 @@ Node::~Node()
 static void	prepare_fact(std::string& expression, std::string& conclusion)
 {
   std::vector<std::string>	vec;
-  boost::split(vec, expression, boost::is_any_of("&|^!"));
+  boost::split(vec, expression, boost::is_any_of(EXPR_OPERATORS));
 
   if (vec.size() == 1) // it means that we have only one fact to set
     facts[expression] = (conclusion == "true") ? true : false;
@@ -76,7 +77,7 @@ static void	prepare_fact(std::string& expression, std::string& conclusion)
 
 static std::string::size_type	get_operator_position(std::string& expr, std::string::size_type index = 0)
 {
-  return expr.find_first_of("&|^!", index);
+  return expr.find_first_of(EXPR_OPERATORS, index);
 }
 
 static OperatorEnum	get_operator(Operator& op)
@@ -157,23 +158,24 @@ static void	delete_rules()
 static void	fill_out(std::ifstream& f)
 {
   char	line[1024];
-  std::string	delim;
-  std::string	s;
-
   while (f.getline(line, 1024))
     {
       std::vector<std::string>	vec;
-      s = line;
-      (s.find("=") != std::string::npos) ? (delim = "=") : (delim = "->");
-      boost::iter_split(vec, line, boost::first_finder(delim));
+
+      bool	is_fact = std::string(line).find("=") != std::string::npos;
+      bool	is_rule = std::string(line).find("->") != std::string::npos;
+
+      boost::iter_split(vec, line, boost::first_finder(is_fact ? "=" : "->"));
 
       std::string&	expression = vec[0];
       std::string&	conclusion = vec[1];
 
-      if (conclusion == "true" || conclusion == "false") // it's a fact
+      if (is_fact)
 	prepare_fact(expression, conclusion);
-      else // it's a rule
+      else if (is_rule)
 	prepare_rule(expression, conclusion);
+      else
+	throw std::runtime_error("bad delimitor");
     }
 }
 
@@ -374,7 +376,14 @@ static void	print_out_rules_table()
   std::cout << "print out rules table:" << std::endl;
   for (RulesSet::iterator it = rules.begin(), end = rules.end();
        it != end; ++it)
-    print_out_binary_tree(*it);
+    {
+      std::cout << "---" << std::endl;
+      std::cout << "condition:" << std::endl;
+      print_out_binary_tree((*it)->left);
+      std::cout << "conclusion:" << std::endl;
+      print_out_binary_tree((*it)->right);
+    }
+  std::cout << "---" << std::endl;
 }
 
 int	main(int ac, char** av)

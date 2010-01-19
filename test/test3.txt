@@ -1,1 +1,1 @@
-O&P&Q&R->true
+O&P&Q&R=true
