@@ -299,7 +299,6 @@ static Boolean	fire_ability(Rule*, Fact);
 static Boolean	fire_ability(Rule* R, Fact F)
 {
   Boolean	condition;
-  (void)F;
 
   condition = bool_expression(R->left);
   if (R->right->op == FACT)
@@ -311,8 +310,23 @@ static Boolean	fire_ability(Rule* R, Fact F)
       else
 	return ((condition == TRUE) ? FALSE : TRUE);
     }
+  if (R->right->op == AND)
+    {
+      if (condition == TRUE)    
+	{
+	  facts[R->right->left->data] = TRUE;
+	  facts[R->right->right->data] = TRUE;
+	  return TRUE;
+	}
+      else if (condition == FALSE)
+	{
+	  if (R->right->left->data != F && truth_value(R->right->left->data) == TRUE)
+	    return FALSE;
+	}
+    }
   return UNKNOWN;
 }
+
 static Boolean	truth_value(Fact F)
 {
   Rule*		rule;

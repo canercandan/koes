@@ -1,3 +1,4 @@
 F=false
-D->C
-F->C
+A=false
+A->D
+F->C&D
