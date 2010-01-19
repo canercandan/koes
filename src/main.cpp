@@ -240,6 +240,27 @@ static bool	find_rule_in_old(Rule* rule, RulesSet& used_rules)
   return (false);
 }
 
+static Node*	get_fact_from_node(Fact F, Node* rule)
+{
+  Node*	a;
+
+  if (rule->op == FACT)
+    {
+      if (rule->data == F)
+	return (rule);
+      else
+	return NULL;
+    }
+  else
+    {
+      if ((a = get_fact_from_node(F, rule->left)) != NULL)
+      	return (a);
+      if ((a = get_fact_from_node(F, rule->right)) != NULL)
+	return (a);
+    }
+  return (NULL);
+}
+
 static Rule*	get_a_concluding_rule(Fact F, RulesSet& used_rules)
 {
   for (RulesSet::iterator it = rules.begin(), end = rules.end();
@@ -248,12 +269,11 @@ static Rule*	get_a_concluding_rule(Fact F, RulesSet& used_rules)
       Rule*	rule = *it;
       Node*	conclusion = rule->right;
       if (!find_rule_in_old(rule, used_rules))
-	if (conclusion->op == FACT)
-	  if (conclusion->data == F)
-	    {
-	      used_rules.push_back(rule);
-	      return rule;
-	    }
+	if (get_fact_from_node(F, conclusion))
+	  {
+	    used_rules.push_back(rule);
+	    return rule;
+	  }
     }
   return NULL;
 }
@@ -264,7 +284,13 @@ static Boolean	fire_ability(Rule*);
 
 static Boolean	fire_ability(Rule* R)
 {
-  return bool_expression(R->left);
+  Boolean	condition;
+  //Boolean	conclusion;
+
+  condition = bool_expression(R->left);
+  //  conclusion = bool_expression(R->right);
+  
+  return condition;
 }
 
 static Boolean	truth_value(Fact F)
