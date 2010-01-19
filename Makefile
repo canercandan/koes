@@ -22,7 +22,7 @@ SUCCESS		=	$(ECHOE) "[\033[32mSUCCESS\033[0m] "
 FAILED		=	$(ECHOE) "[\033[31mFAILED\033[0m] "
 
 INCLUDES	+=	-I$(PATH_INCLUDE)
-LIBRARIES	+=	-L$(PATH_LIBRARY) -lboost_program_options
+LIBRARIES	+=	-L$(PATH_LIBRARY) -lboost_program_options-mt
 
 DEBUG_TRUE	=	-g -DDEBUG
 COMPAT		+=	-D__BSD_VISIBLE
