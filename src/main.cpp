@@ -167,8 +167,7 @@ static void	fill_out(std::ifstream& f)
     {
       std::vector<std::string>	vec;
       s = line;
-      //(strstr(line, "=") != NULL) ? (delim = "=") : (delim = "->");
-      (s.std::string::find("=") != std::string::npos) ? (delim = "=") : (delim = "->");
+      (s.find("=") != std::string::npos) ? (delim = "=") : (delim = "->");
       boost::iter_split(vec, line, boost::first_finder(delim));
 
       std::string&	expression = vec[0];
@@ -309,11 +308,6 @@ int	main(int ac, char** av)
   std::cin >> a;
   std::cout << "target FACT: "<< a <<std::endl;
   std::cout << "reslut: " << truth_value(a) << std::endl;
-  // int	a, b;
-  // std::cin >> a >> b;
-  // std::cout << "a:" << a << "b:" << b << std::endl;
-  // std::cout << or_operation(a, b) << std::endl;  	  
-  //  std::cout << facts["C"] << std::endl; 
   delete_rules();
 
   return 0;
@@ -363,8 +357,6 @@ static Value	or_operation(Value a, Value b)
 
 static Value	xor_operation(Value a, Value b)
 {
-  int		r;
-
   if (a == 1 || b == 1)
     return (FALSE);
   else if (a == 0 && b == 0)
