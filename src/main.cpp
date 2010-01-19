@@ -294,71 +294,40 @@ static Rule*	get_a_concluding_rule(Fact F, RulesSet& used_rules)
 
 static Boolean	bool_expression(Node* exp);
 static Boolean	truth_value(Fact);
-static Boolean	fire_ability(Rule*);
-static int      count_facts_in_expression(Node* node)
-{
-  int	i;
+static Boolean	fire_ability(Rule*, Fact);
 
-  i = 0;
-  if (node->op == FACT)
-    i = 1;
-  else
-    {
-      if (node->op == NOT)
-	i = i + count_facts_in_expression(node->right);  
-      else
-	i = i + count_facts_in_expression(node->left) + count_facts_in_expression(node->right);  
-    }
-  return i;
-}
-
-static Boolean	fire_ability(Rule* R)
+static Boolean	fire_ability(Rule* R, Fact F)
 {
   Boolean	condition;
+  (void)F;
 
   condition = bool_expression(R->left);
   if (R->right->op == FACT)
     return condition;
-      
+  if (R->right->op == NOT)
+    {
+      if (condition == UNKNOWN)
+	return condition;
+      else
+	return ((condition == TRUE) ? FALSE : TRUE);
+    }
   return UNKNOWN;
-  // else 
-   //   if (condition == TRUE)
-  //     {
-  // 	if (conclusion->op == AND)
-  // 	  {
-  // 	    facts[F] = true;
-  // 	  }
-  // 	else if (conclusion->op == OR)
-  // 	  {
-	    
-  // 	  }
-  //     }
-  //   else if (condition == FALSE)
-  //     {
-  // 	if (condition->op == OR)
-  // 	  {
-  // 	    facts[F] = FALSE;
-  // 	    return false;
-  // 	  }
-  //     }
-  //   else
-  //     {}
 }
 static Boolean	truth_value(Fact F)
 {
   Rule*		rule;
   RulesSet	used_rules;
 
-  if (facts.find(F) != facts.end())
+  if (facts.find(F) != facts.end() && facts.find(F)->second != UNKNOWN)
     return facts[F];
   while ((rule = get_a_concluding_rule(F, used_rules)) != NULL)
     {
-      if (fire_ability(rule) == TRUE)
+      if (fire_ability(rule, F) == TRUE)
 	{
 	  facts[F] = TRUE;
 	  return TRUE;
 	}
-      else if (fire_ability(rule) == FALSE)
+      else if (fire_ability(rule, F) == FALSE)
 	{
 	  facts[F] = FALSE;
 	  return FALSE;

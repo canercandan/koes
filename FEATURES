@@ -5,3 +5,14 @@
 - Options --filename to add one or more file containing rules and facts
 - Options --true/--false allowing to set several facts to true and false
 - Options --wish allowing to ask value of one fact
+
+
+-if A and B and ... then X
+-if A or B or ... then X
+-if A xor B xor ... then X
+-A->X, B->X
+-if not A then B
+-if A then not B
+ 
+-if A then B and C (not achieve)
+-if A and B or C then D

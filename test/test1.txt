@@ -1,1 +1,3 @@
-!A->C
+F=false
+D->C
+F->C
