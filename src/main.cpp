@@ -290,13 +290,30 @@ static Rule*	get_a_concluding_rule(Fact F, RulesSet& used_rules)
 static Boolean	bool_expression(Node* exp);
 static Boolean	truth_value(Fact);
 static Boolean	fire_ability(Rule*);
+static int      count_facts_in_expression(Node* node)
+{
+  int	i;
 
+  i = 0;
+  if (node->op == FACT)
+    i = 1;
+  else
+    {
+      if (node->op == NOT)
+	i = i + count_facts_in_expression(node->right);  
+      else
+	i = i + count_facts_in_expression(node->left) + count_facts_in_expression(node->right);  
+    }
+  return i;
+    
+}
 static Boolean	fire_ability(Rule* R)
 {
   Boolean	condition;
   //Boolean	conclusion;
-
-  condition = bool_expression(R->left);
+  if (count_facts_in_expression(R->right) == 1)
+    condition = bool_expression(R->left);
+  //else
   //  conclusion = bool_expression(R->right);
 
   return condition;
