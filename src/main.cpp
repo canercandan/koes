@@ -249,7 +249,7 @@ static bool	find_rule_in_old(Rule* rule, RulesSet& used_rules)
   return (false);
 }
 
-static Node*	get_fact_from_node(Fact F, Node* rule)
+static Node*	get_fact_from_expression(Fact F, Node* rule)
 {
   Node*	a;
 
@@ -262,9 +262,9 @@ static Node*	get_fact_from_node(Fact F, Node* rule)
     }
   else
     {
-      if ((a = get_fact_from_node(F, rule->left)) != NULL)
+      if ((a = get_fact_from_expression(F, rule->left)) != NULL)
       	return (a);
-      if ((a = get_fact_from_node(F, rule->right)) != NULL)
+      if ((a = get_fact_from_expression(F, rule->right)) != NULL)
 	return (a);
     }
   return (NULL);
@@ -278,7 +278,7 @@ static Rule*	get_a_concluding_rule(Fact F, RulesSet& used_rules)
       Rule*	rule = *it;
       Node*	conclusion = rule->right;
       if (!find_rule_in_old(rule, used_rules))
-	if (get_fact_from_node(F, conclusion))
+	if (get_fact_from_expression(F, conclusion))
 	  {
 	    used_rules.push_back(rule);
 	    return rule;
