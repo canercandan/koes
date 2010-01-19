@@ -12,9 +12,9 @@
 #include "node.h"
 #include "sets.h"
 
-Value	xor_operation(Value a, Value b);
-Value	or_operation(Value a, Value b);
-Value	and_operation(Value a, Value b);
+static Value	xor_operation(Value a, Value b);
+static Value	or_operation(Value a, Value b);
+static Value	and_operation(Value a, Value b);
 
 
 typedef Value (*functions)(Value, Value);
@@ -168,7 +168,7 @@ static void	fill_out(std::ifstream& f)
       std::vector<std::string>	vec;
       s = line;
       //(strstr(line, "=") != NULL) ? (delim = "=") : (delim = "->");
-      (s.std::string::find("=") == std::string::npos) ? (delim = "=") : (delim = "->");
+      (s.std::string::find("=") != std::string::npos) ? (delim = "=") : (delim = "->");
       boost::iter_split(vec, line, boost::first_finder(delim));
 
       std::string&	expression = vec[0];
@@ -334,7 +334,7 @@ static Value	bool_expression(Node* exp)
   return (res);
 }
 
-Value	operation(OperatorEnum op, Value a, Value b)
+static Value	operation(OperatorEnum op, Value a, Value b)
 {
   Value		res;
   
@@ -343,7 +343,7 @@ Value	operation(OperatorEnum op, Value a, Value b)
   return (res);
 }
 
-Value	and_operation(Value a, Value b)
+static Value	and_operation(Value a, Value b)
 {
   if (a == 1 && b == 1)
     return (TRUE);
@@ -352,7 +352,7 @@ Value	and_operation(Value a, Value b)
   return (UNKNOWN);
 }
 
-Value	or_operation(Value a, Value b)
+static Value	or_operation(Value a, Value b)
 {
   if (a == 1 || b == 1)
     return (TRUE);
@@ -361,14 +361,13 @@ Value	or_operation(Value a, Value b)
   return (UNKNOWN);
 }
 
-Value	xor_operation(Value a, Value b)
+static Value	xor_operation(Value a, Value b)
 {
   int		r;
 
-  r = or_operation(a, b);
-  if (r == 1)
+  if (a == 1 || b == 1)
     return (FALSE);
-  else if (r == 0)
+  else if (a == 0 && b == 0)
     return (TRUE);
   return (UNKNOWN);
 }

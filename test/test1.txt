@@ -1,3 +1,5 @@
 A=false
-A->B
+E=true
+A|D->B
+E->B
 B->C
