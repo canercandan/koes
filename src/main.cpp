@@ -88,24 +88,36 @@ static OperatorEnum	get_operator(Operator& op)
   return (OperatorEnum)-1;
 }
 
-static void	print_out_binary_tree(Node* node)
+static void	print_out_binary_tree(Node* node, bool tree = false)
 {
   if (node == NULL)
     return;
 
   if (node->op == FACT)
     {
-      std::cout << "FACT [" << node->data << "]" << std::endl;
+      if (tree)
+	std::cout << "FACT [";
+      std::cout << node->data;
+      if (tree)
+	std::cout << "]" << std::endl;
       return;
     }
 
-  std::cout << "OP [" << node->data << "]" << std::endl;
+  if (tree)
+    {
+      std::cout << "OP [";
+      std::cout << node->data;
+      std::cout << "]" << std::endl;
+    }
 
   if (node->left != NULL)
-    print_out_binary_tree(node->left);
+    print_out_binary_tree(node->left, tree);
+
+  if (!tree)
+    std::cout << node->data;
 
   if (node->right != NULL)
-    print_out_binary_tree(node->right);
+    print_out_binary_tree(node->right, tree);
 }
 
 static Node*	create_binary_tree_from_expression(std::string& expr)
@@ -363,7 +375,7 @@ static void	print_out_facts_table()
     std::cout << it->first << " = " << std::boolalpha << it->second << std::endl;
 }
 
-static void	print_out_rules_table()
+static void	print_out_rules_table(bool tree = false)
 {
   if (rules.empty())
     {
@@ -374,13 +386,22 @@ static void	print_out_rules_table()
   for (RulesSet::iterator it = rules.begin(), end = rules.end();
        it != end; ++it)
     {
-      std::cout << "---" << std::endl;
-      std::cout << "condition:" << std::endl;
-      print_out_binary_tree((*it)->left);
-      std::cout << "conclusion:" << std::endl;
-      print_out_binary_tree((*it)->right);
+      if (tree)
+	{
+	  std::cout << "---" << std::endl;
+	  std::cout << "condition:" << std::endl;
+	}
+      print_out_binary_tree((*it)->left, tree);
+      if (tree)
+	std::cout << "conclusion:" << std::endl;
+      else
+	std::cout << " -> ";
+      print_out_binary_tree((*it)->right, tree);
+      if (!tree)
+	std::cout << std::endl;
     }
-  std::cout << "---" << std::endl;
+  if (tree)
+    std::cout << "---" << std::endl;
 }
 
 static void	files_parsing()
@@ -391,10 +412,7 @@ static void	files_parsing()
   for (StringVector::iterator it = fs.begin(), end = fs.end();
        it != end; ++it)
     {
-      std::cout << "FILENAME [" << *it << "]" << std::endl;
-      std::cout << "{{{" << std::endl;
-      system(std::string("cat " + *it).c_str());
-      std::cout << "}}}" << std::endl;
+      std::cout << "+ filename [" << *it << "]" << std::endl;
       std::ifstream	file(it->c_str());
       fill_out(file);
       file.close();
@@ -427,14 +445,17 @@ int	main(int ac, char** av)
 	  if (cmd == "?" || cmd == "help")
 	    std::cout << "Available commands:" << std::endl
 		      << "- ? or help\t\t: To print help" << std::endl
-		      << "- ?F\t\t\t: To print rules table" << std::endl
-		      << "- ?R\t\t\t: To print facts table" << std::endl
+		      << "- ?F\t\t\t: To print facts table" << std::endl
+		      << "- ?R\t\t\t: To print rules table" << std::endl
+		      << "- ?RR\t\t\t: To print rules table with the binary tree" << std::endl
 		      << "- FACT=VALUE\t\t: To set VALUE to FACT" << std::endl
 		      << "- CONDITION->CONCLUSION\t: To create a new rule" << std::endl;
 	  else if (cmd == "?F")
 	    print_out_facts_table();
 	  else if (cmd == "?R")
 	    print_out_rules_table();
+	  else if (cmd == "?RR")
+	    print_out_rules_table(true);
 	  else if (cmd.find("=") != std::string::npos ||
 		   cmd.find("->") != std::string::npos)
 	    fill_out_line(cmd);
