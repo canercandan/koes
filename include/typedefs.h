@@ -15,6 +15,8 @@ struct	OperatorStruct
   Operator	desc;
 };
 
-enum	Value {TRUE = 1, FALSE = 0, UNKNOWN = -1};
+enum	Boolean {TRUE = 1, FALSE = 0, UNKNOWN = -1};
+
+typedef Boolean (*op_func)(Boolean, Boolean);
 
 #endif // !__TYPEDEFS_H__

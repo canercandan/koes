@@ -11,21 +11,20 @@
 #include "typedefs.h"
 #include "node.h"
 #include "sets.h"
-static Value	not_operation(Value a, Value b);
-static Value	xor_operation(Value a, Value b);
-static Value	or_operation(Value a, Value b);
-static Value	and_operation(Value a, Value b);
-static Value	operation(OperatorEnum op, Value a, Value b);
 
-typedef Value (*functions)(Value, Value);
- functions operationArray[] = {
+static Boolean	xor_operation(Boolean a, Boolean b);
+static Boolean	or_operation(Boolean a, Boolean b);
+static Boolean	and_operation(Boolean a, Boolean b);
+static Boolean	not_operation(Boolean a, Boolean b);
+
+op_func	operationArray[] = {
   and_operation,
   or_operation,
   xor_operation,
   not_operation
 };
 
-
+static Boolean	operation(OperatorEnum op, Boolean a, Boolean b);
 
 static OperatorStruct	operators[] = {
   {FACT, "F"},
@@ -69,7 +68,7 @@ static void	prepare_fact(std::string& expression, std::string& conclusion)
   boost::split(vec, expression, boost::is_any_of("&|^!"));
 
   if (vec.size() == 1) // it means that we have only one fact to set
-    facts[expression] = (conclusion == "true") ? true : false;      
+    facts[expression] = (conclusion == "true") ? true : false;
   else // it means there are several facts to set A&B&C&D->true
     for (int i = 0, size = vec.size(); i < size; ++i)
       facts[vec[i]] = (conclusion == "true") ? true : false;
@@ -139,8 +138,6 @@ static Node*	create_binary_tree_from_expression(std::string& expr)
   if (node != NULL)
     node->right = new Node(FACT, NULL, NULL, str);
 
-  // print_out_binary_tree(root);
-
   return root;
 }
 
@@ -197,7 +194,7 @@ static void	options_parsing(int ac, char** av)
       po::store(po::parse_command_line(ac, av, desc), vm);
       po::notify(vm);
 
-      if (vm.count("help"))
+      if (vm.count("help") || !vm.count("filename"))
 	{
 	  std::cout << desc << std::endl;
 	  exit(1);
@@ -214,6 +211,7 @@ static void	options_parsing(int ac, char** av)
       throw std::runtime_error("Exception of unknown type!");
     }
 }
+
 static bool	find_rule_in_old(Rule* rule, RulesSet& used_rules)
 {
   for (RulesSet::iterator it = used_rules.begin(), end = used_rules.end();
@@ -236,32 +234,30 @@ static Rule*	get_a_concluding_rule(Fact F, RulesSet& used_rules)
 	if (conclusion->op == FACT)
 	  if (conclusion->data == F)
 	    {
-	      used_rules.push_back(rule);	    
+	      used_rules.push_back(rule);
 	      return rule;
 	    }
     }
   return NULL;
 }
 
-static Value	bool_expression(Node* exp);
-static Value	truth_value(Fact);
-static Value	fire_ability(Rule*);
+static Boolean	bool_expression(Node* exp);
+static Boolean	truth_value(Fact);
+static Boolean	fire_ability(Rule*);
 
-static Value	fire_ability(Rule* R)
+static Boolean	fire_ability(Rule* R)
 {
-  Value		res;
-  //in the case for only one conclusion
-  res = bool_expression(R->left);
-  return (res);
+  return bool_expression(R->left);
 }
 
-static Value	truth_value(Fact F)
+static Boolean	truth_value(Fact F)
 {
-  Rule*	rule;
-  RulesSet       used_rules;
+  Rule*		rule;
+  RulesSet	used_rules;
+
   if (facts.find(F) != facts.end() && facts.find(F)->second == true)
     return TRUE;
-  else if (facts.find(F) != facts.end() && facts.find(F)->second == false)
+  if (facts.find(F) != facts.end() && facts.find(F)->second == false)
     return FALSE;
   while ((rule = get_a_concluding_rule(F, used_rules)) != NULL)
     {
@@ -278,7 +274,77 @@ static Value	truth_value(Fact F)
     }
   used_rules.clear();
   return UNKNOWN;
- }
+}
+
+static Boolean	bool_expression(Node* exp)
+{
+  if (exp->op == FACT)
+    return truth_value(exp->data);
+
+  return operation(exp->op, truth_value(exp->left->data),
+		   (exp->right->op == FACT) ?
+		   truth_value(exp->right->data) :
+		   bool_expression(exp->right));
+}
+
+static Boolean	operation(OperatorEnum op, Boolean a, Boolean b)
+{
+  if (!(op >= AND && op <= NOT))
+    throw std::runtime_error("bad operator");
+  return (operationArray[op - 2])(a, b);
+}
+
+static Boolean	and_operation(Boolean a, Boolean b)
+{
+  if (a == TRUE && b == TRUE)
+    return (TRUE);
+  if (a == FALSE || b == FALSE)
+    return (FALSE);
+  return (UNKNOWN);
+}
+
+static Boolean	or_operation(Boolean a, Boolean b)
+{
+  if (a == TRUE || b == TRUE)
+    return (TRUE);
+  if (a == FALSE && b == FALSE)
+    return (FALSE);
+  return (UNKNOWN);
+}
+
+static Boolean	xor_operation(Boolean a, Boolean b)
+{
+  if (a == TRUE || b == TRUE)
+    return (FALSE);
+  if (a == FALSE && b == FALSE)
+    return (TRUE);
+  return (UNKNOWN);
+}
+
+static Boolean	not_operation(Boolean a, Boolean b)
+{
+  (void)a;
+  if (b == TRUE)
+    return (FALSE);
+  if (b == FALSE)
+    return (TRUE);
+  return (UNKNOWN);
+}
+
+static void	print_result(Fact F)
+{
+  Boolean	res = truth_value(F);
+  std::string	sRes;
+
+  if (res == TRUE)
+    sRes = "TRUE";
+  else if (res == FALSE)
+    sRes = "FALSE";
+  else
+    sRes = "UNKNOWN";
+
+  std::cout << "[" << F << "] = [" << sRes << "]" << std::endl;
+}
 
 int	main(int ac, char** av)
 {
@@ -304,81 +370,21 @@ int	main(int ac, char** av)
        it != end; ++it)
     print_out_binary_tree(*it);
 
-  // StringVector	ws = vm["wish"].as<StringVector>();
-  // for (StringVector::iterator it = ws.begin(), end = ws.end();
-  //      it != end; ++it)
-  //   {
-  //     std::cout << "WISH [" << *it << "] = ["
-  // 		<< std::boolalpha << truth_value(*it)
-  // 		<< "]" << std::endl;
-  //   }
+  if (vm.count("wish"))
+    {
+      StringVector	ws = vm["wish"].as<StringVector>();
+      for (StringVector::iterator it = ws.begin(), end = ws.end();
+	   it != end; ++it)
+	print_result(*it);
+    }
+  else
+    {
+      std::string a;
+      std::cin >> a;
+      print_result(a);
+    }
 
-  std::string a;
-  std::cin >> a;
-  std::cout << "target FACT: "<< a <<std::endl;
-  std::cout << "reslut: " << truth_value(a) << std::endl;
   delete_rules();
 
   return 0;
-}
-
-//1:true, 0:false, -1:undertermind
-static Value	bool_expression(Node* exp)
-{
-  Value		res;
-
-  if (exp->op == FACT)
-    return (truth_value(exp->data));
-  else 
-    if (exp->right->op == FACT)
-      res = operation(exp->op, truth_value(exp->left->data), truth_value(exp->right->data));
-    else 
-      res = operation(exp->op, truth_value(exp->left->data), bool_expression(exp->right));
-  return (res);
-}
-
-static Value	operation(OperatorEnum op, Value a, Value b)
-{
-  Value		res;
-  
-  if (op >= AND || op <= NOT)
-    res = (operationArray[op - 2])(a, b);
-  return (res);
-}
-
-static Value	and_operation(Value a, Value b)
-{
-  if (a == TRUE && b == TRUE)
-    return (TRUE);
-  else if (a == FALSE || b == FALSE)
-    return (FALSE);
-  return (UNKNOWN);
-}
-
-static Value	or_operation(Value a, Value b)
-{
-  if (a == TRUE || b == TRUE)
-    return (TRUE);
-  else if (a == FALSE && b == FALSE)
-    return (FALSE);
-  return (UNKNOWN);
-}
-
-static Value	xor_operation(Value a, Value b)
-{
-  if (a == TRUE || b == TRUE)
-    return (FALSE);
-  else if (a == FALSE && b == FALSE)
-    return (TRUE);
-  return (UNKNOWN);
-}
-
-static Value	not_operation(Value a, Value b)
-{
-  (void)a;
-  if (b == TRUE)
-    return (FALSE);
-  else if (b == FALSE)
-    return (TRUE);
-  return (UNKNOWN);
 }
