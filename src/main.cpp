@@ -155,28 +155,31 @@ static void	delete_rules()
     delete rules[i];
 }
 
+static void	fill_out_line(std::string line)
+{
+  std::vector<std::string>	vec;
+
+  bool	is_fact = line.find("=") != std::string::npos;
+  bool	is_rule = line.find("->") != std::string::npos;
+
+  boost::iter_split(vec, line, boost::first_finder(is_fact ? "=" : "->"));
+
+  std::string&	expression = vec[0];
+  std::string&	conclusion = vec[1];
+
+  if (is_fact)
+    prepare_fact(expression, conclusion);
+  else if (is_rule)
+    prepare_rule(expression, conclusion);
+  else
+    throw std::runtime_error("bad delimitor");
+}
+
 static void	fill_out(std::ifstream& f)
 {
   char	line[1024];
   while (f.getline(line, 1024))
-    {
-      std::vector<std::string>	vec;
-
-      bool	is_fact = std::string(line).find("=") != std::string::npos;
-      bool	is_rule = std::string(line).find("->") != std::string::npos;
-
-      boost::iter_split(vec, line, boost::first_finder(is_fact ? "=" : "->"));
-
-      std::string&	expression = vec[0];
-      std::string&	conclusion = vec[1];
-
-      if (is_fact)
-	prepare_fact(expression, conclusion);
-      else if (is_rule)
-	prepare_rule(expression, conclusion);
-      else
-	throw std::runtime_error("bad delimitor");
-    }
+    fill_out_line(line);
 }
 
 static void	options_parsing(int ac, char** av)
@@ -196,7 +199,7 @@ static void	options_parsing(int ac, char** av)
       po::store(po::parse_command_line(ac, av, desc), vm);
       po::notify(vm);
 
-      if (vm.count("help") || !vm.count("filename"))
+      if (vm.count("help"))
 	{
 	  std::cout << desc << std::endl;
 	  exit(1);
@@ -347,24 +350,13 @@ static void	print_result(Fact F)
   std::cout << "[" << F << "] = [" << sRes << "]" << std::endl;
 }
 
-static void	files_parsing()
-{
-  StringVector	fs = vm["filename"].as<StringVector>();
-  for (StringVector::iterator it = fs.begin(), end = fs.end();
-       it != end; ++it)
-    {
-      std::cout << "FILENAME [" << *it << "]" << std::endl;
-      std::cout << "{{{" << std::endl;
-      system(std::string("cat " + *it).c_str());
-      std::cout << "}}}" << std::endl;
-      std::ifstream	file(it->c_str());
-      fill_out(file);
-      file.close();
-    }
-}
-
 static void	print_out_facts_table()
 {
+  if (facts.empty())
+    {
+      std::cout << "no facts into table" << std::endl;
+      return;
+    }
   std::cout << "print out facts table:" << std::endl;
   for (FactsSet::iterator it = facts.begin(), end = facts.end();
        it != end; ++it)
@@ -373,6 +365,11 @@ static void	print_out_facts_table()
 
 static void	print_out_rules_table()
 {
+  if (rules.empty())
+    {
+      std::cout << "no rules into table" << std::endl;
+      return;
+    }
   std::cout << "print out rules table:" << std::endl;
   for (RulesSet::iterator it = rules.begin(), end = rules.end();
        it != end; ++it)
@@ -386,14 +383,32 @@ static void	print_out_rules_table()
   std::cout << "---" << std::endl;
 }
 
+static void	files_parsing()
+{
+  if (!vm.count("filename"))
+    return;
+  StringVector	fs = vm["filename"].as<StringVector>();
+  for (StringVector::iterator it = fs.begin(), end = fs.end();
+       it != end; ++it)
+    {
+      std::cout << "FILENAME [" << *it << "]" << std::endl;
+      std::cout << "{{{" << std::endl;
+      system(std::string("cat " + *it).c_str());
+      std::cout << "}}}" << std::endl;
+      std::ifstream	file(it->c_str());
+      fill_out(file);
+      file.close();
+    }
+  print_out_facts_table();
+  print_out_rules_table();
+}
+
 int	main(int ac, char** av)
 {
   options_parsing(ac, av);
   files_parsing();
-  print_out_facts_table();
-  print_out_rules_table();
 
-  if (vm.count("wish"))
+  if (vm.count("wish") && vm.count("filename"))
     {
       StringVector	ws = vm["wish"].as<StringVector>();
       for (StringVector::iterator it = ws.begin(), end = ws.end();
@@ -402,13 +417,29 @@ int	main(int ac, char** av)
     }
   else
     {
-      std::cout << "CTRL+C to quit" << std::endl;
+      std::cout << "CTRL+C to quit or type ? for help" << std::endl;
       while (1)
 	{
-	  std::string	fact;
-	  std::cout << "Fact> ";
-	  std::cin >> fact;
-	  print_result(fact);
+	  std::string	cmd;
+	  std::cout << "es> ";
+	  std::cin >> cmd;
+
+	  if (cmd == "?" || cmd == "help")
+	    std::cout << "Available commands:" << std::endl
+		      << "- ? or help\t\t: To print help" << std::endl
+		      << "- ?F\t\t\t: To print rules table" << std::endl
+		      << "- ?R\t\t\t: To print facts table" << std::endl
+		      << "- FACT=VALUE\t\t: To set VALUE to FACT" << std::endl
+		      << "- CONDITION->CONCLUSION\t: To create a new rule" << std::endl;
+	  else if (cmd == "?F")
+	    print_out_facts_table();
+	  else if (cmd == "?R")
+	    print_out_rules_table();
+	  else if (cmd.find("=") != std::string::npos ||
+		   cmd.find("->") != std::string::npos)
+	    fill_out_line(cmd);
+	  else
+	    print_result(cmd);
 	}
     }
 
