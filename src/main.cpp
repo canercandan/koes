@@ -206,6 +206,10 @@ static void	options_parsing(int ac, char** av)
 	 "set the verbose (-v 0 = quiet)")
 	("wish,w", po::value<StringVector>()->composing(),
 	 "provide wishes (facts value)")
+	("true,T", po::value<StringVector>()->composing(),
+	 "provide a fact to set to true")
+	("false,F", po::value<StringVector>()->composing(),
+	 "provide a fact to set to false")
 	;
 
       po::store(po::parse_command_line(ac, av, desc), vm);
@@ -215,6 +219,11 @@ static void	options_parsing(int ac, char** av)
 	{
 	  std::cout << desc << std::endl;
 	  exit(1);
+	}
+
+      if (vm.count("true"))
+	{
+	  //for (StringVector::iterator it = vm
 	}
     }
   catch (std::exception& e)
@@ -289,7 +298,7 @@ static Boolean	fire_ability(Rule* R)
 
   condition = bool_expression(R->left);
   //  conclusion = bool_expression(R->right);
-  
+
   return condition;
 }
 
@@ -447,10 +456,23 @@ static void	files_parsing()
   print_out_rules_table();
 }
 
+static void	facts_parsing(bool value)
+{
+  std::string	sValue(value ? "true" : "false");
+  if (!vm.count(sValue))
+    return;
+  StringVector	sv = vm[sValue].as<StringVector>();
+  for (StringVector::iterator it = sv.begin(), end = sv.end();
+       it != end; ++it)
+    prepare_fact(*it, sValue);
+}
+
 int	main(int ac, char** av)
 {
   options_parsing(ac, av);
   files_parsing();
+  facts_parsing(true);
+  facts_parsing(false);
 
   if (vm.count("wish") && vm.count("filename"))
     {
