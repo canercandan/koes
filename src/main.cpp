@@ -254,6 +254,7 @@ static Value	fire_ability(Rule* R)
   res = bool_expression(R->left);
   return (res);
 }
+
 static Value	truth_value(Fact F)
 {
   Rule*	rule;
@@ -347,27 +348,27 @@ static Value	operation(OperatorEnum op, Value a, Value b)
 
 static Value	and_operation(Value a, Value b)
 {
-  if (a == 1 && b == 1)
+  if (a == TRUE && b == TRUE)
     return (TRUE);
-  else if (a == 0 || b == 0)
+  else if (a == FALSE || b == FALSE)
     return (FALSE);
   return (UNKNOWN);
 }
 
 static Value	or_operation(Value a, Value b)
 {
-  if (a == 1 || b == 1)
+  if (a == TRUE || b == TRUE)
     return (TRUE);
-  else if (a == 0 && b == 0)
+  else if (a == FALSE && b == FALSE)
     return (FALSE);
   return (UNKNOWN);
 }
 
 static Value	xor_operation(Value a, Value b)
 {
-  if (a == 1 || b == 1)
+  if (a == TRUE || b == TRUE)
     return (FALSE);
-  else if (a == 0 && b == 0)
+  else if (a == FALSE && b == FALSE)
     return (TRUE);
   return (UNKNOWN);
 }

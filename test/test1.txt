@@ -1,5 +1,6 @@
-A=false
-E=true
-A|D->B
+U=false
+G=true
 E->B
+U->K
+K&G->B
 B->C
