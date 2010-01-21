@@ -38,7 +38,7 @@ static OperatorStruct	operators[] = {
 };
 
 static BooleanStruct	booleans[] = {
-  {TRUE, "ture"},
+  {TRUE, "true"},
   {FALSE, "false"},
   {UNKNOWN, "unknown"},
   {(Boolean)-1, ""}
