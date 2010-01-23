@@ -2,7 +2,11 @@
 # define __FUNCTIONS_H__
 
 # include "typedefs.h"
+# include "node.h"
 
+Boolean	bool_expression(Node* exp);
+Boolean	truth_value(Fact F);
+Boolean	bool_conclusion(Boolean condition, Node* exp, Fact F);
 Boolean	operations(OperatorEnum op, Boolean a, Boolean b);
 void	facts_parsing(bool value);
 void	files_parsing();

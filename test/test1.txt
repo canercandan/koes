@@ -1,2 +1,1 @@
-A=false
-A->D&E
+A->B|C

@@ -18,7 +18,8 @@ SRCS		=	\
 			$(PATH_SRC)/print_out_facts_table.cpp	\
 			$(PATH_SRC)/print_out_rules_table.cpp	\
 			$(PATH_SRC)/fill_out_line.cpp		\
-			$(PATH_SRC)/options_parsing.cpp
+			$(PATH_SRC)/options_parsing.cpp		\
+			$(PATH_SRC)/expressions.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)
 

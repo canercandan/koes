@@ -11,6 +11,7 @@
 
 RulesSet	g_rules;
 FactsSet	g_facts;
+  RulesSet	used_rules;
 
 po::options_description	g_desc;
 po::variables_map	g_vm;
@@ -21,7 +22,7 @@ static void	delete_rules()
     delete g_rules[i];
 }
 
-static bool	find_rule_in_old(Rule* rule, RulesSet& used_rules)
+static bool	find_rule_in_old(Rule* rule)
 {
   for (RulesSet::iterator it = used_rules.begin(), end = used_rules.end();
        it != end; ++it)
@@ -53,14 +54,14 @@ static Node*	get_fact_from_expression(Fact F, Node* rule)
   return (NULL);
 }
 
-static Rule*	get_a_concluding_rule(Fact F, RulesSet& used_rules)
+static Rule*	get_a_concluding_rule(Fact F)
 {
   for (RulesSet::iterator it = g_rules.begin(), end = g_rules.end();
        it != end; ++it)
     {
       Rule*	rule = *it;
       Node*	conclusion = rule->right;
-      if (!find_rule_in_old(rule, used_rules))
+      if (!find_rule_in_old(rule))
 	if (get_fact_from_expression(F, conclusion))
 	  {
 	    used_rules.push_back(rule);
@@ -70,8 +71,7 @@ static Rule*	get_a_concluding_rule(Fact F, RulesSet& used_rules)
   return NULL;
 }
 
-static Boolean	bool_expression(Node* exp);
-static Boolean	truth_value(Fact);
+
 static Boolean	fire_ability(Rule*, Fact);
 
 static Boolean	fire_ability(Rule* R, Fact F)
@@ -86,38 +86,19 @@ static Boolean	fire_ability(Rule* R, Fact F)
       if (R->right->op == FACT)
 	return TRUE;
       else		       
- 	{
-	  if (R->right->op == NOT)
-	    {
-	      return FALSE;
-	    }
-	  else if (R->right->op == AND)
-	    {
-	      return TRUE;
-	    }
-	  else if (R->right->op == OR)
-	    {
-	      left = R->right->left->data;
-	      right = R->right->right->data;
-	      if ((left != F && truth_value(left) == FALSE)
-		  || (right != F && truth_value(right) == FALSE))
-		return TRUE;
-	    }
-	  else
- 	    return FALSE;
- 	}
+	return bool_conclusion(condition, R->right, F);
      }
   return UNKNOWN;
 }
 
-static Boolean	truth_value(Fact F)
+
+Boolean	truth_value(Fact F)
 {
   Rule*		rule;
-  RulesSet	used_rules;
 
   if (g_facts.find(F) != g_facts.end())
     return g_facts[F];
-  while ((rule = get_a_concluding_rule(F, used_rules)) != NULL)
+  while ((rule = get_a_concluding_rule(F)) != NULL)
     {
       if (fire_ability(rule, F) == TRUE)
 	{
@@ -134,7 +115,7 @@ static Boolean	truth_value(Fact F)
   return UNKNOWN;
 }
 
-static Boolean	bool_expression(Node* exp)
+Boolean	bool_expression(Node* exp)
 {
   if (exp->op == FACT)
     return truth_value(exp->data);

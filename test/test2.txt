@@ -1,9 +1,2 @@
-cat=true
-dog=true
 A=true
-A->B
-B->C
-B->D
-C&D->E
-tiger=true
-fly=false
+A->B&C|D|E^F
