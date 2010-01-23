@@ -1,0 +1,11 @@
+A=true
+B=true
+D=false
+
+
+
+
+
+
+A&D->E
+A&B->C&D

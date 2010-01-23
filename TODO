@@ -1,0 +1,4 @@
++ add in prompt options to add facts set to true and false --true --false
++ replace -> symbol by = for setting facts into the file
++ don't remove rule into get_a_concluding_rule_and_remove_rule function but set the result to use directly and the next using
++ list all facts that we use in backward chaining
