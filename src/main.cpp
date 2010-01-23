@@ -77,31 +77,36 @@ static Boolean	fire_ability(Rule*, Fact);
 static Boolean	fire_ability(Rule* R, Fact F)
 {
   Boolean	condition;
-
+  Fact left;
+  Fact right;
+ 
   condition = bool_expression(R->left);
-  if (R->right->op == FACT)
-    return condition;
-  if (R->right->op == NOT)
-    {
-      if (condition == UNKNOWN)
-	return condition;
-      else
-	return ((condition == TRUE) ? FALSE : TRUE);
-    }
-  if (R->right->op == AND)
-    {
-      if (condition == TRUE)    
-	{
-	  g_facts[R->right->left->data] = TRUE;
-	  g_facts[R->right->right->data] = TRUE;
-	  return TRUE;
-	}
-      else if (condition == FALSE)
-	{
-	  if (R->right->left->data != F && truth_value(R->right->left->data) == TRUE)
-	    return FALSE;
-	}
-    }
+  if (condition == TRUE)
+     {
+      if (R->right->op == FACT)
+	return TRUE;
+      else		       
+ 	{
+	  if (R->right->op == NOT)
+	    {
+	      return FALSE;
+	    }
+	  else if (R->right->op == AND)
+	    {
+	      return TRUE;
+	    }
+	  else if (R->right->op == OR)
+	    {
+	      left = R->right->left->data;
+	      right = R->right->right->data;
+	      if ((left != F && truth_value(left) == FALSE)
+		  || (right != F && truth_value(right) == FALSE))
+		return TRUE;
+	    }
+	  else
+ 	    return FALSE;
+ 	}
+     }
   return UNKNOWN;
 }
 
@@ -110,7 +115,7 @@ static Boolean	truth_value(Fact F)
   Rule*		rule;
   RulesSet	used_rules;
 
-  if (g_facts.find(F) != g_facts.end() && g_facts.find(F)->second != UNKNOWN)
+  if (g_facts.find(F) != g_facts.end())
     return g_facts[F];
   while ((rule = get_a_concluding_rule(F, used_rules)) != NULL)
     {
@@ -119,7 +124,7 @@ static Boolean	truth_value(Fact F)
 	  g_facts[F] = TRUE;
 	  return TRUE;
 	}
-      else if (fire_ability(rule, F) == FALSE)
+      if (fire_ability(rule, F) == FALSE)
 	{
 	  g_facts[F] = FALSE;
 	  return FALSE;

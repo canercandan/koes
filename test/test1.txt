@@ -1,4 +1,2 @@
-F=false
 A=false
-A->D
-F->C&D
+A->D&E
