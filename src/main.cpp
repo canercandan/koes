@@ -9,121 +9,19 @@
 #include "functions.h"
 #include "globals.h"
 
+
 RulesSet	g_rules;
 FactsSet	g_facts;
-  RulesSet	used_rules;
 
-po::options_description	g_desc;
+namespace po = boost::program_options;
+
 po::variables_map	g_vm;
+po::options_description	g_desc;
 
 static void	delete_rules()
 {
   for (int i = 0, size = g_rules.size(); i < size; ++i)
     delete g_rules[i];
-}
-
-static bool	find_rule_in_old(Rule* rule)
-{
-  for (RulesSet::iterator it = used_rules.begin(), end = used_rules.end();
-       it != end; ++it)
-    {
-      if (rule == *it)
-	return (true);
-    }
-  return (false);
-}
-
-static Node*	get_fact_from_expression(Fact F, Node* rule)
-{
-  Node*	a;
-
-  if (rule->op == FACT)
-    {
-      if (rule->data == F)
-	return (rule);
-      else
-	return NULL;
-    }
-  else
-    {
-      if ((a = get_fact_from_expression(F, rule->left)) != NULL)
-      	return (a);
-      if ((a = get_fact_from_expression(F, rule->right)) != NULL)
-	return (a);
-    }
-  return (NULL);
-}
-
-static Rule*	get_a_concluding_rule(Fact F)
-{
-  for (RulesSet::iterator it = g_rules.begin(), end = g_rules.end();
-       it != end; ++it)
-    {
-      Rule*	rule = *it;
-      Node*	conclusion = rule->right;
-      if (!find_rule_in_old(rule))
-	if (get_fact_from_expression(F, conclusion))
-	  {
-	    used_rules.push_back(rule);
-	    return rule;
-	  }
-    }
-  return NULL;
-}
-
-
-static Boolean	fire_ability(Rule*, Fact);
-
-static Boolean	fire_ability(Rule* R, Fact F)
-{
-  Boolean	condition;
-  Fact left;
-  Fact right;
- 
-  condition = bool_expression(R->left);
-  if (condition == TRUE)
-     {
-      if (R->right->op == FACT)
-	return TRUE;
-      else		       
-	return bool_conclusion(condition, R->right, F);
-     }
-  return UNKNOWN;
-}
-
-
-Boolean	truth_value(Fact F)
-{
-  Rule*		rule;
-
-  if (g_facts.find(F) != g_facts.end())
-    return g_facts[F];
-  while ((rule = get_a_concluding_rule(F)) != NULL)
-    {
-      if (fire_ability(rule, F) == TRUE)
-	{
-	  g_facts[F] = TRUE;
-	  return TRUE;
-	}
-      if (fire_ability(rule, F) == FALSE)
-	{
-	  g_facts[F] = FALSE;
-	  return FALSE;
-	}
-    }
-  used_rules.clear();
-  return UNKNOWN;
-}
-
-Boolean	bool_expression(Node* exp)
-{
-  if (exp->op == FACT)
-    return truth_value(exp->data);
-
-  return operations(exp->op, truth_value(exp->left->data),
-		    (exp->right->op == FACT) ?
-		    truth_value(exp->right->data) :
-		    bool_expression(exp->right));
 }
 
 static void	print_result(Fact F)
