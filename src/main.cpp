@@ -80,10 +80,10 @@ int	main(int ac, char** av)
 	    fill_out_line(cmd);
 	  else
 	    print_result(cmd);
+	  used_rules.clear();
 	}
     }
 
   delete_rules();
-
   return 0;
 }

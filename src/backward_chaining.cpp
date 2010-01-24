@@ -5,6 +5,7 @@
 #include "globals.h"
 
 RulesSet used_rules;
+
 static bool	find_rule_in_old(Rule* rule)
 {
   for (RulesSet::iterator it = used_rules.begin(), end = used_rules.end();
@@ -57,9 +58,7 @@ static Rule*	get_a_concluding_rule(Fact F)
 static Boolean	fire_ability(Rule* R, Fact F)
 {
   Boolean	condition;
-  Fact left;
-  Fact right;
- 
+
   condition = bool_expression(R->left);
   if (condition == TRUE)
      {
@@ -103,3 +102,4 @@ Boolean	bool_expression(Node* exp)
 		    truth_value(exp->right->data) :
 		    bool_expression(exp->right));
 }
+
