@@ -16,6 +16,7 @@ void	facts_parsing(bool value);
 void	files_parsing();
 void	print_out_facts_table();
 void	print_out_rules_table(bool tree = false);
+void	print_out_fired_rules();
 void	prepare_fact(std::string& expression, std::string& conclusion);
 void	prepare_rule(std::string& expression, std::string& conclusion);
 void	fill_out_line(std::string line);

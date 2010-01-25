@@ -27,6 +27,7 @@ static void	print_result(Fact F)
 {
   tribool	res = truth_value(F);
   std::cout << bool_to_string(res) << std::endl;
+  print_out_fired_rules();
 }
 
 static void	print_command_usage()
@@ -38,6 +39,7 @@ static void	print_command_usage()
 	    << "- ?RR\t\t\t: To print rules table with the binary tree" << std::endl
 	    << "- FACT=VALUE\t\t: To set VALUE to FACT" << std::endl
 	    << "- CONDITION->CONCLUSION\t: To create a new rule" << std::endl;
+
 }
 
 static void	parse_command(std::string& cmd)
@@ -81,6 +83,7 @@ int	main(int ac, char** av)
 	  std::cin >> cmd;
 	  parse_command(cmd);
 	  used_rules.clear();
+	  fired_rules.clear();
 	}
     }
 

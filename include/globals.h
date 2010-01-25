@@ -11,6 +11,7 @@ extern OperatorStruct	g_operators[];
 extern RulesSet	g_rules;
 extern FactsSet	g_facts;
 extern RulesSet	used_rules;
+extern RulesSet	fired_rules;
 
 namespace po = boost::program_options;
 

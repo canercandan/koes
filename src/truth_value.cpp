@@ -5,6 +5,7 @@
 #include "globals.h"
 
 RulesSet used_rules;
+RulesSet fired_rules;
 
 static bool	find_rule_in_old(Rule* rule)
 {
@@ -79,6 +80,7 @@ tribool	truth_value(Fact F)
       if (indeterminate(res))
 	continue;
       g_facts[F] = res;
+      fired_rules.push_back(rule);
       return res;
     }
   return indeterminate;
