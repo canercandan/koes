@@ -13,5 +13,5 @@ void	print_out_facts_table()
   std::cout << "print out facts table:" << std::endl;
   for (FactsSet::iterator it = g_facts.begin(), end = g_facts.end();
        it != end; ++it)
-    std::cout << it->first << " = " << g_booleans[it->second].desc << std::endl;
+    std::cout << it->first << " = " << bool_to_string(it->second) << std::endl;
 }

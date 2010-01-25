@@ -78,10 +78,8 @@ tribool	truth_value(Fact F)
       tribool	res = fire_ability(rule, F);
       if (indeterminate(res))
 	continue;
-      assert(false);
       g_facts[F] = res;
       return res;
     }
-  assert(false);
   return indeterminate;
 }

@@ -7,7 +7,6 @@
 # include "typedefs.h"
 
 extern OperatorStruct	g_operators[];
-extern BooleanStruct	g_booleans[];
 
 extern RulesSet	g_rules;
 extern FactsSet	g_facts;

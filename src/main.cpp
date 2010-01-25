@@ -26,15 +26,7 @@ static void	delete_rules()
 static void	print_result(Fact F)
 {
   tribool	res = truth_value(F);
-  std::string	sRes;
-
-  if (res == true)
-    sRes = "true";
-  else if (res == false)
-    sRes = "false";
-  else
-    sRes = "unknown";
-  std::cout << sRes << std::endl;
+  std::cout << bool_to_string(res) << std::endl;
 }
 
 static void	print_command_usage()

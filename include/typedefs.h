@@ -15,12 +15,4 @@ struct	OperatorStruct
   Operator	desc;
 };
 
-enum	Boolean {TRUE = 0, FALSE, UNKNOWN};
-
-struct  BooleanStruct
-{
-  Boolean	bo;
-  Data		desc;
-};
-
 #endif // !__TYPEDEFS_H__

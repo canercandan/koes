@@ -20,5 +20,6 @@ void	prepare_fact(std::string& expression, std::string& conclusion);
 void	prepare_rule(std::string& expression, std::string& conclusion);
 void	fill_out_line(std::string line);
 void	options_parsing(int ac, char** av);
+std::string	bool_to_string(tribool b);
 
 #endif // !__FUNCTIONS_H__

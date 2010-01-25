@@ -8,7 +8,6 @@ NAME		=	$(PATH_BIN)/es
 SRCS		=	\
 			$(PATH_SRC)/main.cpp			\
 			$(PATH_SRC)/operators.cpp		\
-			$(PATH_SRC)/booleans.cpp		\
 			$(PATH_SRC)/operations.cpp		\
 			$(PATH_SRC)/node.cpp			\
 			$(PATH_SRC)/facts_parsing.cpp		\
@@ -21,7 +20,8 @@ SRCS		=	\
 			$(PATH_SRC)/options_parsing.cpp		\
 			$(PATH_SRC)/bool_conclusion.cpp		\
 			$(PATH_SRC)/bool_expression.cpp		\
-			$(PATH_SRC)/truth_value.cpp
+			$(PATH_SRC)/truth_value.cpp		\
+			$(PATH_SRC)/bool_to_string.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)
 
