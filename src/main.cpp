@@ -25,12 +25,12 @@ static void	delete_rules()
 
 static void	print_result(Fact F)
 {
-  Boolean	res = truth_value(F);
+  tribool	res = truth_value(F);
   std::string	sRes;
 
-  if (res == TRUE)
+  if (res == true)
     sRes = "true";
-  else if (res == FALSE)
+  else if (res == false)
     sRes = "false";
   else
     sRes = "unknown";

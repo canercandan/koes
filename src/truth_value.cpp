@@ -55,39 +55,33 @@ static Rule*	get_a_concluding_rule(Fact F)
   return NULL;
 }
 
-static Boolean	fire_ability(Rule* R, Fact F)
+static tribool	fire_ability(Rule* R, Fact F)
 {
-  Boolean	condition;
-
-  condition = bool_expression(R->left);
-  if (condition == TRUE)
-     {
+  tribool	condition = bool_expression(R->left);
+  if (condition == true)
+    {
       if (R->right->op == FACT)
-	return TRUE;
+	return true;
       else
 	return bool_conclusion(condition, R->right, F);
      }
-  return UNKNOWN;
+  return indeterminate;
 }
 
-Boolean	truth_value(Fact F)
+tribool	truth_value(Fact F)
 {
-  Rule*		rule;
-
   if (g_facts.find(F) != g_facts.end())
     return g_facts[F];
+  Rule*	rule;
   while ((rule = get_a_concluding_rule(F)) != NULL)
     {
-      if (fire_ability(rule, F) == TRUE)
-	{
-	  g_facts[F] = TRUE;
-	  return TRUE;
-	}
-      if (fire_ability(rule, F) == FALSE)
-	{
-	  g_facts[F] = FALSE;
-	  return FALSE;
-	}
+      tribool	res = fire_ability(rule, F);
+      if (indeterminate(res))
+	continue;
+      assert(false);
+      g_facts[F] = res;
+      return res;
     }
-  return UNKNOWN;
+  assert(false);
+  return indeterminate;
 }

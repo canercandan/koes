@@ -5,12 +5,12 @@
 #include "node.h"
 #include "typedefs.h"
 
-typedef Boolean (*op_exp)(Boolean, Node*, Fact);
+typedef tribool (*op_exp)(tribool, Node*, Fact);
 
-static Boolean	and_expression(Boolean, Node*, Fact);
-static Boolean	or_expression(Boolean, Node*, Fact);
-static Boolean	xor_expression(Boolean, Node*, Fact);
-static Boolean	not_expression(Boolean, Node*, Fact);
+static tribool	and_expression(tribool, Node*, Fact);
+static tribool	or_expression(tribool, Node*, Fact);
+static tribool	xor_expression(tribool, Node*, Fact);
+static tribool	not_expression(tribool, Node*, Fact);
 
 static op_exp	expressionArray[] = {
   and_expression,
@@ -19,128 +19,128 @@ static op_exp	expressionArray[] = {
   not_expression
 };
 
-Boolean	bool_conclusion(Boolean condition, Node* exp, Fact F)
+tribool	bool_conclusion(tribool condition, Node* exp, Fact F)
 {
   if (!(exp->op >= AND && exp->op <= NOT))
     throw std::runtime_error("bad operator");
   return (expressionArray[exp->op - 2])(condition, exp, F);
 }
 
-static Boolean	and_expression(Boolean condition, Node* exp, Fact F)
+static tribool	and_expression(tribool condition, Node* exp, Fact F)
 {
   Node*	exp_left = exp->left;
   Node*	exp_right = exp->right;
 
-  if (condition == TRUE)
+  if (condition == true)
     {
       if (exp_right->op == FACT || exp_left->data == F)
-	return TRUE;
+	return true;
       else
-	return bool_conclusion(TRUE, exp->right, F);
+	return bool_conclusion(true, exp->right, F);
     }
-  else if (condition == FALSE)
+  else if (condition == false)
     {
       if (exp_right->op == FACT)
 	{
-	  if (exp_left->data == F && truth_value(exp_right->data) == TRUE)
-	    return FALSE;
+	  if (exp_left->data == F && truth_value(exp_right->data) == true)
+	    return false;
 	}
       else
 	{
-	  if (exp_left->data == F && bool_expression(exp_right) == TRUE)
-	    return FALSE;
-	  else if (truth_value(exp_left->data) == TRUE)
-	    return bool_conclusion(FALSE, exp->right, F);
+	  if (exp_left->data == F && bool_expression(exp_right) == true)
+	    return false;
+	  else if (truth_value(exp_left->data) == true)
+	    return bool_conclusion(false, exp->right, F);
 	}
     }
-  return UNKNOWN;
+  return indeterminate;
 }
 
-static Boolean	or_expression(Boolean condition, Node* exp, Fact F)
+static tribool	or_expression(tribool condition, Node* exp, Fact F)
 {
   Node*	exp_left = exp->left;
   Node* exp_right = exp->right;
-  if (condition == TRUE)
+  if (condition == true)
     {
       if (exp_right->op == FACT)
 	{
-	  if ((exp_left->data != F && truth_value(exp_left->data) == FALSE)
-	      || (exp_right->data != F && truth_value(exp_right->data) == FALSE))
-	    return TRUE;
+	  if ((exp_left->data != F && truth_value(exp_left->data) == false)
+	      || (exp_right->data != F && truth_value(exp_right->data) == false))
+	    return true;
 	}
       else
 	{
-	  if (exp_left->data == F && bool_expression(exp_right) == FALSE)
-	    return TRUE;
-	  else if (truth_value(exp_left->data) == FALSE)
-	    return bool_conclusion(TRUE, exp_right, F);
+	  if (exp_left->data == F && bool_expression(exp_right) == false)
+	    return true;
+	  else if (truth_value(exp_left->data) == false)
+	    return bool_conclusion(true, exp_right, F);
 	}
     }
-  else if (condition == FALSE)
+  else if (condition == false)
     {
       if (exp_right->op == FACT)
 	{
-	  if ((exp_left->data != F && truth_value(exp_left->data) == TRUE)
-	      || (exp_right->data != F && truth_value(exp_right->data) == TRUE))
- 	    return FALSE;
+	  if ((exp_left->data != F && truth_value(exp_left->data) == true)
+	      || (exp_right->data != F && truth_value(exp_right->data) == true))
+ 	    return false;
 	}
       else
 	{
-	  if (exp_left->data == F && bool_expression(exp_right) == TRUE)
-	    return FALSE;
-	  else if (truth_value(exp_left->data) == TRUE)
-	    return bool_conclusion(FALSE, exp_right, F);
+	  if (exp_left->data == F && bool_expression(exp_right) == true)
+	    return false;
+	  else if (truth_value(exp_left->data) == true)
+	    return bool_conclusion(false, exp_right, F);
 	}
     }
-  return UNKNOWN;
+  return indeterminate;
 }
 
-static Boolean	xor_expression(Boolean condition, Node* exp, Fact F)
+static tribool	xor_expression(tribool condition, Node* exp, Fact F)
 {
   Node*	exp_left = exp->left;
   Node* exp_right = exp->right;
-  if (condition == TRUE)
+  if (condition == true)
     {
       if (exp_right->op == FACT || exp_left->data == F)
-	return FALSE;
+	return false;
       else
-	return bool_conclusion(FALSE, exp_right, F);
+	return bool_conclusion(false, exp_right, F);
     }
-  else if (condition == FALSE)
+  else if (condition == false)
     {
       if (exp_right->op == FACT)
 	{
-	  if ((exp_left->data != F && truth_value(exp_left->data) == FALSE)
-	      || (exp_right->data != F && truth_value(exp_right->data) == FALSE))
-	    return TRUE;
+	  if ((exp_left->data != F && truth_value(exp_left->data) == false)
+	      || (exp_right->data != F && truth_value(exp_right->data) == false))
+	    return true;
 	}
       else
 	{
-	  if (exp_left->data == F && bool_expression(exp_right) == FALSE)
-	    return TRUE;
-	  else if (truth_value(exp_left->data) == FALSE)
-	    return bool_conclusion(TRUE, exp->right, F);
+	  if (exp_left->data == F && bool_expression(exp_right) == false)
+	    return true;
+	  else if (truth_value(exp_left->data) == false)
+	    return bool_conclusion(true, exp->right, F);
 	}
     }
-  return UNKNOWN;
+  return indeterminate;
 }
 
-static Boolean	not_expression(Boolean condition, Node* exp, Fact F)
+static tribool	not_expression(tribool condition, Node* exp, Fact F)
 {
   Node* exp_right = exp->right;
-  if (condition == TRUE)
+  if (condition == true)
     {
       if (exp_right->op == FACT)
-	return FALSE;
+	return false;
       else
-	return bool_conclusion(FALSE, exp_right, F);
+	return bool_conclusion(false, exp_right, F);
     }
-  else if (condition == FALSE)
+  else if (condition == false)
     {
       if (exp_right->op == FACT)
-	return TRUE;
+	return true;
       else
-	return bool_conclusion(TRUE, exp_right, F);
+	return bool_conclusion(true, exp_right, F);
     }
-  return UNKNOWN;
+  return indeterminate;
 }

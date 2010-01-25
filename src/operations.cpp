@@ -1,10 +1,12 @@
 #include <stdexcept>
 #include "functions.h"
 
-static Boolean	and_operation(Boolean a, Boolean b);
-static Boolean	or_operation(Boolean a, Boolean b);
-static Boolean	xor_operation(Boolean a, Boolean b);
-static Boolean	not_operation(Boolean a, Boolean b);
+static tribool	and_operation(tribool a, tribool b);
+static tribool	or_operation(tribool a, tribool b);
+static tribool	xor_operation(tribool a, tribool b);
+static tribool	not_operation(tribool a, tribool b);
+
+typedef tribool (*op_func)(tribool, tribool);
 
 static op_func	operationArray[] = {
   and_operation,
@@ -13,46 +15,46 @@ static op_func	operationArray[] = {
   not_operation
 };
 
-Boolean	operations(OperatorEnum op, Boolean a, Boolean b)
+tribool	operations(OperatorEnum op, tribool a, tribool b)
 {
   if (!(op >= AND && op <= NOT))
     throw std::runtime_error("bad operator");
   return (operationArray[op - 2])(a, b);
 }
 
-static Boolean	and_operation(Boolean a, Boolean b)
+static tribool	and_operation(tribool a, tribool b)
 {
-  if (a == TRUE && b == TRUE)
-    return (TRUE);
-  if (a == FALSE || b == FALSE)
-    return (FALSE);
-  return (UNKNOWN);
+  if (a == true && b == true)
+    return (true);
+  if (a == false || b == false)
+    return (false);
+  return (indeterminate);
 }
 
-static Boolean	or_operation(Boolean a, Boolean b)
+static tribool	or_operation(tribool a, tribool b)
 {
-  if (a == TRUE || b == TRUE)
-    return (TRUE);
-  if (a == FALSE && b == FALSE)
-    return (FALSE);
-  return (UNKNOWN);
+  if (a == true || b == true)
+    return (true);
+  if (a == false && b == false)
+    return (false);
+  return (indeterminate);
 }
 
-static Boolean	xor_operation(Boolean a, Boolean b)
+static tribool	xor_operation(tribool a, tribool b)
 {
-  if (a == TRUE || b == TRUE)
-    return (FALSE);
-  if (a == FALSE && b == FALSE)
-    return (TRUE);
-  return (UNKNOWN);
+  if (a == true || b == true)
+    return (false);
+  if (a == false && b == false)
+    return (true);
+  return (indeterminate);
 }
 
-static Boolean	not_operation(Boolean a, Boolean b)
+static tribool	not_operation(tribool a, tribool b)
 {
   (void)a;
-  if (b == TRUE)
-    return (FALSE);
-  if (b == FALSE)
-    return (TRUE);
-  return (UNKNOWN);
+  if (b == true)
+    return (false);
+  if (b == false)
+    return (true);
+  return (indeterminate);
 }

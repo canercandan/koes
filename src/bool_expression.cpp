@@ -2,7 +2,7 @@
 #include "node.h"
 #include "functions.h"
 
-Boolean	bool_expression(Node* exp)
+tribool	bool_expression(Node* exp)
 {
   if (exp->op == FACT)
     return truth_value(exp->data);

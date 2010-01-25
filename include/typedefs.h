@@ -23,6 +23,4 @@ struct  BooleanStruct
   Data		desc;
 };
 
-typedef Boolean (*op_func)(Boolean, Boolean);
-
 #endif // !__TYPEDEFS_H__

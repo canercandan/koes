@@ -1,13 +1,17 @@
 #ifndef __FUNCTIONS_H__
 # define __FUNCTIONS_H__
 
+# include <boost/logic/tribool.hpp>
+
 # include "typedefs.h"
 # include "node.h"
 
-Boolean	bool_expression(Node* exp);
-Boolean	truth_value(Fact F);
-Boolean	bool_conclusion(Boolean condition, Node* exp, Fact F);
-Boolean	operations(OperatorEnum op, Boolean a, Boolean b);
+using namespace boost::logic;
+
+tribool	bool_expression(Node* exp);
+tribool	truth_value(Fact F);
+tribool	bool_conclusion(tribool condition, Node* exp, Fact F);
+tribool	operations(OperatorEnum op, tribool a, tribool b);
 void	facts_parsing(bool value);
 void	files_parsing();
 void	print_out_facts_table();
