@@ -37,7 +37,7 @@ static Node*	get_fact_from_expression(Fact F, Node* rule)
     }
   return (NULL);
 }
- 
+
 static Rule*	get_a_concluding_rule(Fact F)
 {
   for (RulesSet::iterator it = g_rules.begin(), end = g_rules.end();
@@ -64,7 +64,7 @@ static Boolean	fire_ability(Rule* R, Fact F)
      {
       if (R->right->op == FACT)
 	return TRUE;
-      else		       
+      else
 	return bool_conclusion(condition, R->right, F);
      }
   return UNKNOWN;
@@ -102,4 +102,3 @@ Boolean	bool_expression(Node* exp)
 		    truth_value(exp->right->data) :
 		    bool_expression(exp->right));
 }
-

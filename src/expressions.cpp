@@ -27,7 +27,7 @@ Boolean	bool_conclusion(Boolean condition, Node* exp, Fact F)
 static Boolean	and_expression(Boolean condition, Node* exp, Fact F)
 {
   Node*	exp_left = exp->left;
-  Node* exp_right = exp->right; 
+  Node*	exp_right = exp->right;
 
   if (condition == TRUE)
     {
@@ -57,12 +57,12 @@ static Boolean	and_expression(Boolean condition, Node* exp, Fact F)
 static Boolean	or_expression(Boolean condition, Node* exp, Fact F)
 {
   Node*	exp_left = exp->left;
-  Node* exp_right = exp->right; 
+  Node* exp_right = exp->right;
   if (condition == TRUE)
     {
       if (exp_right->op == FACT)
 	{
-	  if ((exp_left->data != F && truth_value(exp_left->data) == FALSE) 
+	  if ((exp_left->data != F && truth_value(exp_left->data) == FALSE)
 	      || (exp_right->data != F && truth_value(exp_right->data) == FALSE))
 	    return TRUE;
 	}
@@ -70,7 +70,7 @@ static Boolean	or_expression(Boolean condition, Node* exp, Fact F)
 	{
 	  if (exp_left->data == F && bool_expression(exp_right) == FALSE)
 	    return TRUE;
-	  else if (truth_value(exp_left->data) == FALSE) 
+	  else if (truth_value(exp_left->data) == FALSE)
 	    return bool_conclusion(TRUE, exp_right, F);
 	}
     }
@@ -78,7 +78,7 @@ static Boolean	or_expression(Boolean condition, Node* exp, Fact F)
     {
       if (exp_right->op == FACT)
 	{
-	  if ((exp_left->data != F && truth_value(exp_left->data) == TRUE) 
+	  if ((exp_left->data != F && truth_value(exp_left->data) == TRUE)
 	      || (exp_right->data != F && truth_value(exp_right->data) == TRUE))
  	    return FALSE;
 	}
@@ -86,7 +86,7 @@ static Boolean	or_expression(Boolean condition, Node* exp, Fact F)
 	{
 	  if (exp_left->data == F && bool_expression(exp_right) == TRUE)
 	    return FALSE;
-	  else if (truth_value(exp_left->data) == TRUE) 
+	  else if (truth_value(exp_left->data) == TRUE)
 	    return bool_conclusion(FALSE, exp_right, F);
 	}
     }
@@ -96,7 +96,7 @@ static Boolean	or_expression(Boolean condition, Node* exp, Fact F)
 static Boolean	xor_expression(Boolean condition, Node* exp, Fact F)
 {
   Node*	exp_left = exp->left;
-  Node* exp_right = exp->right; 
+  Node* exp_right = exp->right;
   if (condition == TRUE)
     {
       if (exp_right->op == FACT || exp_left->data == F)
@@ -108,7 +108,7 @@ static Boolean	xor_expression(Boolean condition, Node* exp, Fact F)
     {
       if (exp_right->op == FACT)
 	{
-	  if ((exp_left->data != F && truth_value(exp_left->data) == FALSE) 
+	  if ((exp_left->data != F && truth_value(exp_left->data) == FALSE)
 	      || (exp_right->data != F && truth_value(exp_right->data) == FALSE))
 	    return TRUE;
 	}
@@ -118,14 +118,14 @@ static Boolean	xor_expression(Boolean condition, Node* exp, Fact F)
 	    return TRUE;
 	  else if (truth_value(exp_left->data) == FALSE)
 	    return bool_conclusion(TRUE, exp->right, F);
-	}     
+	}
     }
   return UNKNOWN;
 }
 
 static Boolean	not_expression(Boolean condition, Node* exp, Fact F)
 {
-  Node* exp_right = exp->right; 
+  Node* exp_right = exp->right;
   if (condition == TRUE)
     {
       if (exp_right->op == FACT)

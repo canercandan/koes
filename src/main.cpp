@@ -9,7 +9,6 @@
 #include "functions.h"
 #include "globals.h"
 
-
 RulesSet	g_rules;
 FactsSet	g_facts;
 
@@ -38,6 +37,34 @@ static void	print_result(Fact F)
   std::cout << sRes << std::endl;
 }
 
+static void	print_command_usage()
+{
+  std::cout << "Available commands:" << std::endl
+	    << "- ? or help\t\t: To print help" << std::endl
+	    << "- ?F\t\t\t: To print facts table" << std::endl
+	    << "- ?R\t\t\t: To print rules table" << std::endl
+	    << "- ?RR\t\t\t: To print rules table with the binary tree" << std::endl
+	    << "- FACT=VALUE\t\t: To set VALUE to FACT" << std::endl
+	    << "- CONDITION->CONCLUSION\t: To create a new rule" << std::endl;
+}
+
+static void	parse_command(std::string& cmd)
+{
+  if (cmd == "?" || cmd == "help")
+    print_command_usage();
+  else if (cmd == "?F")
+    print_out_facts_table();
+  else if (cmd == "?R")
+    print_out_rules_table();
+  else if (cmd == "?RR")
+    print_out_rules_table(true);
+  else if (cmd.find("=") != std::string::npos ||
+	   cmd.find("->") != std::string::npos)
+    fill_out_line(cmd);
+  else
+    print_result(cmd);
+}
+
 int	main(int ac, char** av)
 {
   options_parsing(ac, av);
@@ -60,26 +87,7 @@ int	main(int ac, char** av)
 	  std::string	cmd;
 	  std::cout << "es> ";
 	  std::cin >> cmd;
-
-	  if (cmd == "?" || cmd == "help")
-	    std::cout << "Available commands:" << std::endl
-		      << "- ? or help\t\t: To print help" << std::endl
-		      << "- ?F\t\t\t: To print facts table" << std::endl
-		      << "- ?R\t\t\t: To print rules table" << std::endl
-		      << "- ?RR\t\t\t: To print rules table with the binary tree" << std::endl
-		      << "- FACT=VALUE\t\t: To set VALUE to FACT" << std::endl
-		      << "- CONDITION->CONCLUSION\t: To create a new rule" << std::endl;
-	  else if (cmd == "?F")
-	    print_out_facts_table();
-	  else if (cmd == "?R")
-	    print_out_rules_table();
-	  else if (cmd == "?RR")
-	    print_out_rules_table(true);
-	  else if (cmd.find("=") != std::string::npos ||
-		   cmd.find("->") != std::string::npos)
-	    fill_out_line(cmd);
-	  else
-	    print_result(cmd);
+	  parse_command(cmd);
 	  used_rules.clear();
 	}
     }
