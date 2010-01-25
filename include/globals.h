@@ -11,11 +11,11 @@ extern BooleanStruct	g_booleans[];
 
 extern RulesSet	g_rules;
 extern FactsSet	g_facts;
+extern RulesSet	used_rules;
 
 namespace po = boost::program_options;
 
 extern po::variables_map	g_vm;
 extern po::options_description	g_desc;
 
-extern RulesSet	used_rules;
 #endif // !__GLOBALS_H__

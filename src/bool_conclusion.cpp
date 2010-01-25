@@ -1,8 +1,10 @@
+#include <iostream>
 #include <stdexcept>
+
 #include "functions.h"
 #include "node.h"
 #include "typedefs.h"
-#include <iostream>
+
 typedef Boolean (*op_exp)(Boolean, Node*, Fact);
 
 static Boolean	and_expression(Boolean, Node*, Fact);
