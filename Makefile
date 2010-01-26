@@ -21,7 +21,9 @@ SRCS		=	\
 			$(PATH_SRC)/bool_conclusion.cpp		\
 			$(PATH_SRC)/bool_expression.cpp		\
 			$(PATH_SRC)/truth_value.cpp		\
-			$(PATH_SRC)/bool_to_string.cpp
+			$(PATH_SRC)/bool_to_string.cpp		\
+			$(PATH_SRC)/print_out_fired_rules.cpp	\
+			$(PATH_SRC)/print_out_binary_tree.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)
 

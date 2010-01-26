@@ -3,39 +3,6 @@
 #include "functions.h"
 #include "globals.h"
 
-static void	print_out_binary_tree(Node* node, bool tree = false)
-{
-  if (node == NULL)
-    return;
-
-  if (node->op == FACT)
-    {
-      if (tree)
-	std::cout << "FACT [";
-      std::cout << node->data;
-      if (tree)
-	std::cout << "]" << std::endl;
-      else
-	std::cout << " ";
-      return;
-    }
-
-  if (tree)
-    {
-      std::cout << "OP [";
-      std::cout << node->data;
-      std::cout << "]" << std::endl;
-    }
-
-  if (node->left != NULL)
-    print_out_binary_tree(node->left, tree);
-
-  if (!tree)
-    std::cout << node->data << " ";
-
-  if (node->right != NULL)
-    print_out_binary_tree(node->right, tree);
-}
 
 void	print_out_rules_table(bool tree /*= false*/)
 {
@@ -64,22 +31,4 @@ void	print_out_rules_table(bool tree /*= false*/)
     }
   if (tree)
     std::cout << "---" << std::endl;
-}
-
-void	print_out_fired_rules()
-{
-  if (fired_rules.empty())
-    { 
-      std::cout << "no rules been fired" << std::endl;
-      return;
-    }
-  std::cout << "print out fired rules:" << std::endl;
-  for (RulesSet::iterator it = fired_rules.begin(), end = fired_rules.end();
-       it != end; ++it)
-    {
-      print_out_binary_tree((*it)->left);
-      std::cout << "-> ";
-      print_out_binary_tree((*it)->right);
-      std::cout << std::endl;
-    }
 }
