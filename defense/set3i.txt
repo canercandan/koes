@@ -8,3 +8,6 @@ D&E=true
 
 ;; Search
 A
+
+;; Result
+;; A = unknown

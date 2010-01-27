@@ -9,3 +9,6 @@ E=false
 
 ;; Search
 A
+
+;; Result
+;; A = true

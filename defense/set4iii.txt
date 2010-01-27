@@ -13,3 +13,7 @@ E=false
 ;; Search
 A
 F
+
+;; Result
+;; A = true
+;; F = true

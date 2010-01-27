@@ -13,3 +13,7 @@ E=true
 ;; Search
 A
 F
+
+;; Result
+;; A = unknown
+;; F = unknown
