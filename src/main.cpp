@@ -73,7 +73,11 @@ int	main(int ac, char** av)
     {
       for (StringVector::iterator it = g_wishes.begin(), end = g_wishes.end();
 	   it != end; ++it)
-	print_result(*it);
+	{
+	  print_result(*it);
+	  g_used_rules.clear();
+	  g_fired_rules.clear();
+	}
     }
   else
     {
