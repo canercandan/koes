@@ -24,4 +24,6 @@ void	prepare_fact(std::string& expression, std::string& conclusion)
   else // it means there are several facts to set A&B&C&D->true
     for (int i = 0, size = vec.size(); i < size; ++i)
       g_initial_facts[vec[i]] = (conclusion == "true") ? true : false;
+
+  g_facts = g_initial_facts;
 }
