@@ -24,7 +24,14 @@ void	fill_out_line(std::string line)
       return;
     }
 
-  boost::iter_split(vec, line, boost::first_finder(is_fact ? "=" : "->"));
+  try
+    {
+      boost::iter_split(vec, line, boost::first_finder(is_fact ? "=" : "->"));
+    }
+  catch (...)
+    {
+      throw std::runtime_error(std::string("line:" + line));
+    }
 
   std::string&	expression = vec[0];
   std::string&	conclusion = vec[1];

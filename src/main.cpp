@@ -61,12 +61,9 @@ int	main(int ac, char** av)
   facts_parsing(true);
   facts_parsing(false);
 
-  //print_out_facts_table();
-
   if (g_vm.count("wish") && g_vm.count("filename"))
     {
       StringVector	ws = g_vm["wish"].as<StringVector>();
-      // g_wishes += ws;
       for (StringVector::iterator it = ws.begin(), end = ws.end();
       	   it != end; ++it)
       	g_wishes.push_back(*it);
@@ -74,8 +71,7 @@ int	main(int ac, char** av)
 
   if (g_wishes.size() > 0 && g_vm.count("filename"))
     {
-      StringVector	ws = g_vm["wish"].as<StringVector>();
-      for (StringVector::iterator it = ws.begin(), end = ws.end();
+      for (StringVector::iterator it = g_wishes.begin(), end = g_wishes.end();
 	   it != end; ++it)
 	print_result(*it);
     }

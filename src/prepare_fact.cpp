@@ -1,3 +1,5 @@
+#include <stdexcept>
+#include <iostream>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 
@@ -8,7 +10,14 @@
 void	prepare_fact(std::string& expression, std::string& conclusion)
 {
   std::vector<std::string>	vec;
-  boost::split(vec, expression, boost::is_any_of(EXPR_OPERATORS));
+  try
+    {
+      boost::split(vec, expression, boost::is_any_of(EXPR_OPERATORS));
+    }
+  catch (...)
+    {
+      throw std::runtime_error(std::string("expression:" + expression));
+    }
 
   if (vec.size() == 1) // it means that we have only one fact to set
     g_initial_facts[expression] = (conclusion == "true") ? true : false;
