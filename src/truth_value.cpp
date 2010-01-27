@@ -73,11 +73,10 @@ tribool	truth_value(Fact F)
 {
   if (g_facts.find(F) != g_facts.end())
     return g_facts[F];
-  Rule*		rule;
-
+  Rule*	rule;
   while ((rule = get_a_concluding_rule(F)) != NULL)
     {
-      tibool	res = fire_ability(rule, F);
+      tribool	res = fire_ability(rule, F);
       if (indeterminate(res))
 	{
 	  g_fired_rules.push_back(rule);
