@@ -79,7 +79,10 @@ tribool	truth_value(Fact F)
     {
       res = fire_ability(rule, F);
       if (indeterminate(res))
-	continue;
+	{
+	  g_fired_rules.push_back(rule);
+	  continue;
+	}
       g_facts[F] = res;
       g_fired_rules.push_back(rule);
       return res;
