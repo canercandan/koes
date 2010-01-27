@@ -5,6 +5,9 @@
 
 void	print_out_fired_rules()
 {
+  if (!(g_vm.count("verbose") && g_vm["verbose"].as<int>() >= 1))
+    return;
+
   if (g_fired_rules.empty())
     {
       std::cout << "no rules been fired" << std::endl;
