@@ -1,2 +1,3 @@
-A->B|C
-C->D&F
+C=true
+A->B
+C->B

@@ -4,6 +4,7 @@
 #include "functions.h"
 #include "node.h"
 #include "typedefs.h"
+#include "globals.h"
 
 typedef tribool (*op_exp)(tribool, Node*, Fact);
 
@@ -33,10 +34,19 @@ static tribool	and_expression(tribool condition, Node* exp, Fact F)
 
   if (condition == true)
     {
-      if (exp_right->op == FACT || exp_left->data == F)
-	return true;
+      if (exp_right->op == FACT)
+	{
+	  (exp_right->data == F) ? (g_facts[exp_left->data] = true)
+	    : (g_facts[exp_right->data] = true);
+	  return true;
+	}
       else
-	return bool_conclusion(true, exp->right, F);
+	{
+	  if (exp_left->data == F)
+	    return true;
+	  else
+	    return bool_conclusion(true, exp->right, F);
+	}
     }
   else if (condition == false)
     {

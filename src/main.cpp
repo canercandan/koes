@@ -92,7 +92,6 @@ int	main(int ac, char** av)
 	  g_fired_rules.clear();
 	}
     }
-
   delete_rules();
   return 0;
 }
