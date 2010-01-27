@@ -14,7 +14,7 @@ void	print_out_fired_rules()
       return;
     }
   std::cout << "print out fired rules:" << std::endl;
-  for (RulesSet::iterator it = g_fired_rules.begin(), end = g_fired_rules.end();
+  for (RulesSet::reverse_iterator it = g_fired_rules.rbegin(), end = g_fired_rules.rend();
        it != end; ++it)
     {
       print_out_binary_tree((*it)->left);
