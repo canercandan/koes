@@ -1,0 +1,11 @@
+;; Rules Set 3 "NOT" as condition
+B&C->A
+D&!E->B
+B->C
+
+;; Initial facts (ii)
+D=true
+E=false
+
+;; Search
+A

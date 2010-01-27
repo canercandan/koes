@@ -3,7 +3,6 @@
 #include "functions.h"
 #include "globals.h"
 
-
 void	print_out_rules_table(bool tree /*= false*/)
 {
   if (g_rules.empty())

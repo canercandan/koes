@@ -1,0 +1,11 @@
+;; Rules Set 2 "OR" as condition
+B&C->A
+D|E->B
+B->C
+
+;; Initial facts (i)
+D=false
+E=true
+
+;; Search
+A

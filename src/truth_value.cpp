@@ -4,12 +4,12 @@
 #include "functions.h"
 #include "globals.h"
 
-RulesSet used_rules;
-RulesSet fired_rules;
+RulesSet	g_used_rules;
+RulesSet	g_fired_rules;
 
 static bool	find_rule_in_old(Rule* rule)
 {
-  for (RulesSet::iterator it = used_rules.begin(), end = used_rules.end();
+  for (RulesSet::iterator it = g_used_rules.begin(), end = g_used_rules.end();
        it != end; ++it)
     {
       if (rule == *it)
@@ -49,7 +49,7 @@ static Rule*	get_a_concluding_rule(Fact F)
       if (!find_rule_in_old(rule))
 	if (get_fact_from_expression(F, conclusion))
 	  {
-	    used_rules.push_back(rule);
+	    g_used_rules.push_back(rule);
 	    return rule;
 	  }
     }
@@ -80,7 +80,7 @@ tribool	truth_value(Fact F)
       if (indeterminate(res))
 	continue;
       g_facts[F] = res;
-      fired_rules.push_back(rule);
+      g_fired_rules.push_back(rule);
       return res;
     }
   return indeterminate;

@@ -1,0 +1,15 @@
+;; Rules Set 4 "NOT"
+B|C->A
+D&!E->B
+B->C
+!G&H->F
+!E->!G
+D->H
+
+;; Initial facts (iii)
+D=true
+E=false
+
+;; Search
+A
+F

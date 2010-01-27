@@ -1,3 +1,4 @@
+#include <iostream>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 
@@ -6,13 +7,22 @@
 
 void	fill_out_line(std::string line)
 {
-  if (line.size() <= 0)
+  if (line.size() <= 0) // empty line
+    return;
+
+  if (line[0] == ';') // comment
     return;
 
   std::vector<std::string>	vec;
 
   bool	is_fact = line.find("=") != std::string::npos;
   bool	is_rule = line.find("->") != std::string::npos;
+
+  if (!is_fact && !is_rule)
+    {
+      g_wishes.push_back(line);
+      return;
+    }
 
   boost::iter_split(vec, line, boost::first_finder(is_fact ? "=" : "->"));
 

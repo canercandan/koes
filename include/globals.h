@@ -10,8 +10,10 @@ extern OperatorStruct	g_operators[];
 
 extern RulesSet	g_rules;
 extern FactsSet	g_facts;
-extern RulesSet	used_rules;
-extern RulesSet	fired_rules;
+extern FactsSet	g_initial_facts;
+extern RulesSet	g_used_rules;
+extern RulesSet	g_fired_rules;
+extern StringVector	g_wishes;
 
 namespace po = boost::program_options;
 

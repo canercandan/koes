@@ -1,0 +1,11 @@
+;; Rules Set 5 "OR" as conclusion
+B&E->A
+C&D->B|F
+F->E
+G->!F
+
+;; Initial facts (i)
+C&D=true
+
+;; Search
+;; No search defined

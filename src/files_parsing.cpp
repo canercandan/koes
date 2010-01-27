@@ -24,6 +24,7 @@ void	files_parsing()
       fill_out(file);
       file.close();
     }
+  g_facts = g_initial_facts;
   print_out_facts_table();
   print_out_rules_table(g_vm.count("tree"));
 }

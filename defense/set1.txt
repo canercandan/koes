@@ -1,0 +1,19 @@
+;; Rules Set 1
+B->A
+C->A
+D&E->B
+G&H->F
+I&J->G
+G->H
+L&M->K
+O&P->L&N
+N->M
+
+;; Initial facts
+D&E&I&J&O&P=true
+
+;; Search
+A
+F
+K
+P

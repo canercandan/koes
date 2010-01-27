@@ -23,7 +23,8 @@ SRCS		=	\
 			$(PATH_SRC)/truth_value.cpp		\
 			$(PATH_SRC)/bool_to_string.cpp		\
 			$(PATH_SRC)/print_out_fired_rules.cpp	\
-			$(PATH_SRC)/print_out_binary_tree.cpp
+			$(PATH_SRC)/print_out_binary_tree.cpp	\
+			$(PATH_SRC)/print_result.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)
 

@@ -1,0 +1,12 @@
+;; Rules Set 6 "FOR FUN!"
+A->A
+B->C
+C->!B
+D->E
+E->D
+
+;; Initial facts
+;; Not defined
+
+;; Search
+;; Not defined
