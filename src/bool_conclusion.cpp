@@ -43,9 +43,15 @@ static tribool	and_expression(tribool condition, Node* exp, Fact F)
       else
 	{
 	  if (exp_left->data == F)
-	    return true;
+	    {
+	      bool_conclusion(true, exp->right, F);
+	      return true;
+	    }
 	  else
-	    return bool_conclusion(true, exp->right, F);
+	    {
+	      g_facts[exp_left->data] = true;
+	      return bool_conclusion(true, exp->right, F);
+	    }
 	}
     }
   else if (condition == false)
@@ -90,15 +96,18 @@ static tribool	or_expression(tribool condition, Node* exp, Fact F)
     {
       if (exp_right->op == FACT)
 	{
-	  if ((exp_left->data != F && truth_value(exp_left->data) == true)
-	      || (exp_right->data != F && truth_value(exp_right->data) == true))
- 	    return false;
+	  (exp_right->data == F) ? (g_facts[exp_left->data] = false)
+	    : (g_facts[exp_right->data] = false);	  
+	  return false;
 	}
       else
 	{
-	  if (exp_left->data == F && bool_expression(exp_right) == true)
-	    return false;
-	  else if (truth_value(exp_left->data) == true)
+	  if (exp_left->data == F)
+	    {
+	      bool_conclusion(true, exp->right, F);	      
+	      return false;
+	    }
+	  else 
 	    return bool_conclusion(false, exp_right, F);
 	}
     }
@@ -111,10 +120,25 @@ static tribool	xor_expression(tribool condition, Node* exp, Fact F)
   Node* exp_right = exp->right;
   if (condition == true)
     {
-      if (exp_right->op == FACT || exp_left->data == F)
-	return false;
+      if (exp_right->op == FACT)
+	{
+	  (exp_right->data == F) ? (g_facts[exp_left->data] = false)
+	    : (g_facts[exp_right->data] = false);	  
+	  return false;
+	}
       else
-	return bool_conclusion(false, exp_right, F);
+	{
+	  if (exp_left->data == F)
+	    {
+	      bool_conclusion(false, exp->right, F);
+	      return false;
+	    }
+	  else
+	    {
+	      g_facts[exp_left->data] = false;
+	      return bool_conclusion(false, exp->right, F);
+	    }
+	}
     }
   else if (condition == false)
     {
