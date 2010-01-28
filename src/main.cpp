@@ -56,15 +56,11 @@ static void	parse_command(std::string& cmd)
 
 int	main(int ac, char** av)
 {
-  //! parsing phase for options files
   options_parsing(ac, av);
   files_parsing();
-
-  //! parsing for --true and --false options
   facts_parsing(true);
   facts_parsing(false);
 
-  //! push asked facts by wish option to g_wishes
   if (g_vm.count("wish") && g_vm.count("filename"))
     {
       StringVector	ws = g_vm["wish"].as<StringVector>();
@@ -73,8 +69,6 @@ int	main(int ac, char** av)
       	g_wishes.push_back(*it);
     }
 
-  //! if there is a fact asked from the both file and option
-  //! then we call print_result for each of them
   if (g_wishes.size() > 0 && g_vm.count("filename"))
     {
       for (StringVector::iterator it = g_wishes.begin(), end = g_wishes.end();
@@ -85,7 +79,7 @@ int	main(int ac, char** av)
 	  g_fired_rules.clear();
 	}
     }
-  else //! otherwise we go in interactive mode
+  else
     {
       std::cout << "CTRL+C to quit or type ? for help" << std::endl;
       while (1)
@@ -98,7 +92,6 @@ int	main(int ac, char** av)
 	  g_fired_rules.clear();
 	}
     }
-  //! to finish we free all allocated memory
   delete_rules();
   return 0;
 }
