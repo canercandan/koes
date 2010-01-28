@@ -28,7 +28,10 @@ static void	get_facts_from_node(Node *node)
   if (node->op == FACT)
     {
       if (!fact_is_in_fired_facts(node->data) && !fact_is_in_g_facts(node->data))
-	fired_facts.push_back(node->data);
+	{
+	  if (node->data != "")
+	    fired_facts.push_back(node->data);
+	}
     }
   else
     {
@@ -40,7 +43,7 @@ static void	get_facts_from_node(Node *node)
 
 static void	get_facts_from_fired_rules()
 {
-  for (RulesSet::reverse_iterator it = g_fired_rules.rbegin(), end = g_fired_rules.rend();
+  for (RulesSet::iterator it = g_fired_rules.begin(), end = g_fired_rules.end();
        it != end; ++it)
     {
       get_facts_from_node((*it)->left);
@@ -49,15 +52,15 @@ static void	get_facts_from_fired_rules()
   return ;
 }
 
-static void		ask_question()
+static void		ask_question(Fact F)
 {
-  get_facts_from_fired_rules();
   for (StringVector::iterator it = fired_facts.begin(), end = fired_facts.end();
        it != end; ++it)
     {
-      std::string	b_str;
-      if (*it == "")
+      if (*it == F)
 	continue;
+      std::string	b_str;
+
       std::cout << "what is the fact?[true|false]" << std::endl;
       std::cout << "? " << *it << "=";
       std::cin >> b_str;
@@ -77,7 +80,15 @@ void	print_result(Fact F)
   tribool	res;
  
   while (indeterminate(res = truth_value(F)))
-    ask_question();
+    {
+      get_facts_from_fired_rules();
+      if (fired_facts.size() == 1)
+	{
+	  std::cout << "expert is dead!!!" << std::endl;
+	  break;
+	}
+      ask_question(F);
+    }
   std::cout << "Searching for " << F << " = " << bool_to_string(res) << std::endl;
   if (g_vm.count("verbose") && g_vm["verbose"].as<int>() >= 1)
     {
