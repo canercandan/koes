@@ -20,6 +20,7 @@ void	options_parsing(int ac, char** av)
 	("false,F", po::value<StringVector>()->composing(),
 	 "provide a fact to set to false")
 	("tree,t", "enable binary tree view while file parsing")
+	("interactive,i", "enable interactive mode")
 	;
 
       po::store(po::parse_command_line(ac, av, g_desc), g_vm);

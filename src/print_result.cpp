@@ -61,13 +61,15 @@ static void		ask_question(Fact F)
 	continue;
       std::string	b_str;
 
-      std::cout << "what is the fact?[true|false]" << std::endl;
+      std::cout << "what is the fact?[true|false|unknown]" << std::endl;
       std::cout << "? " << *it << "=";
       std::cin >> b_str;
       if (b_str == "true")
 	g_facts[*it] = true;
       else if (b_str == "false")
 	g_facts[*it] = false;
+      else
+	g_facts[*it] = indeterminate;
       break;
     }
   fired_facts.clear();
@@ -77,18 +79,24 @@ static void		ask_question(Fact F)
 
 void	print_result(Fact F)
 {
-  tribool	res;
- 
-  while (indeterminate(res = truth_value(F)))
+  tribool	res = indeterminate;
+
+  if (g_vm.count("interactive"))
     {
-      get_facts_from_fired_rules();
-      if (fired_facts.size() == 1)
+      while (indeterminate(res = truth_value(F)))
 	{
-	  std::cout << "expert is dead!!!" << std::endl;
-	  break;
+	  get_facts_from_fired_rules();
+	  if (fired_facts.size() == 1)
+	    {
+	      std::cout << "expert is dead!!!" << std::endl;
+	      break;
+	    }
+	  ask_question(F);
 	}
-      ask_question(F);
     }
+  else
+    res = truth_value(F);
+
   std::cout << "Searching for " << F << " = " << bool_to_string(res) << std::endl;
   if (g_vm.count("verbose") && g_vm["verbose"].as<int>() >= 1)
     {
