@@ -6,7 +6,7 @@
 - Options --true/--false allowing to set several facts to true and false
 - Options --wish allowing to ask value of one fact
 
-
+know-how rules:
 -if A and B and ... then X
 -if A or B or ... then X
 -if A xor B xor ... then X
@@ -14,5 +14,9 @@
 -if not A then B
 -if A then not B
  
--if A then B and C (not achieve)
--if A and B or C then D
+-if A then B and C 
+-if A then B or C
+-if A then B xor C
+-if A and B or C then D(multiple conditions)
+-if A then C and B or C(multiple conclusions)
+-iteractive chaining
