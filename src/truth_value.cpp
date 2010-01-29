@@ -39,8 +39,10 @@ static Node*	get_fact_from_expression(Fact F, Node* rule)
   return (NULL);
 }
 
-static Rule*	get_a_concluding_rule(Fact F)
+static RulesSet		get_concluding_rules(Fact F)
 {
+  RulesSet	used_rules;
+
   for (RulesSet::iterator it = g_rules.begin(), end = g_rules.end();
        it != end; ++it)
     {
@@ -49,11 +51,10 @@ static Rule*	get_a_concluding_rule(Fact F)
       if (!find_rule_in_old(rule))
 	if (get_fact_from_expression(F, conclusion))
 	  {
-	    g_used_rules.push_back(rule);
-	    return rule;
+	    used_rules.push_back(rule);
 	  }
     }
-  return NULL;
+  return (used_rules);
 }
 
 static tribool	fire_ability(Rule* R, Fact F)
@@ -73,9 +74,16 @@ tribool	truth_value(Fact F)
 {
   if (g_facts.find(F) != g_facts.end())
     return g_facts[F];
-  Rule*	rule;
-  while ((rule = get_a_concluding_rule(F)) != NULL)
+  
+  RulesSet	rules;
+  rules = get_concluding_rules(F);
+
+
+  for (RulesSet::iterator it = rules.begin(), end = rules.end();
+       it != end; ++it)
     {
+      Rule*	rule = *it;
+      g_used_rules.push_back(rule);
       tribool	res = fire_ability(rule, F);
       if (indeterminate(res))
 	{

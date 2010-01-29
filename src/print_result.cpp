@@ -68,9 +68,9 @@ static void		ask_question(Fact F)
 	g_facts[*it] = true;
       else if (b_str == "false")
 	g_facts[*it] = false;
-      else
-	g_facts[*it] = indeterminate;
-      break;
+      else			
+	g_facts[*it] = indeterminate; 
+      break;			
     }
   fired_facts.clear();
   g_used_rules.clear();
